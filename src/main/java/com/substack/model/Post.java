@@ -2,6 +2,8 @@ package com.substack.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -43,5 +45,10 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "co_author_id")
     )
     private List<Users> coAuthor;
+
+    private String audience = "everyone";
+    private String comments = "everyone";
+    private LocalDateTime scheduledAt;
+    private boolean sendEmail = true;
 
 }

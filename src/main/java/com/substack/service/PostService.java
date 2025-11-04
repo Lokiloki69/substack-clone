@@ -1,40 +1,43 @@
+// src/main/java/com/substack/service/PostService.java
 package com.substack.service;
 
 import com.substack.model.Post;
+import com.substack.model.Tag;
 import com.substack.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.substack.repository.TagRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class PostService {
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepo;
+    private final TagRepository tagRepo;
 
-    @Transactional
-    public Post save(Post post) {
-        return postRepository.save(post);
-    }
+    public Post savePost(Post post, String tagsCsv) {
+        // Parse tags
+        if (tagsCsv != null && !tagsCsv.isBlank()) {
+            List<Tag> tags = Arrays.stream(tagsCsv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(name -> tagRepo.findByName(name).orElseGet(() -> tagRepo.save(Tag.builder().name(name).build())))
+                    .collect(Collectors.toList());
+            post.setTags(tags);
+        }
 
-    @Transactional
-    public Post update(Post post) {
-        return postRepository.save(post);
+        return postRepo.save(post);
     }
 
     public Post findById(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-    }
-
-    public List<Post> findAll() {
-        return postRepository.findAll();
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        postRepository.deleteById(id);
+        return postRepo.findById(id).orElse(null);
     }
 }

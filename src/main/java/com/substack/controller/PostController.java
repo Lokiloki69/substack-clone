@@ -1,77 +1,79 @@
+// src/main/java/com/substack/controller/PostController.java
 package com.substack.controller;
 
 import com.substack.model.Post;
-import com.substack.model.Users;
 import com.substack.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/posts")
+@RequiredArgsConstructor
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
 
-    // Show create post form
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("post", new Post());
-        return "post/create";
+    @GetMapping("/new")
+    public String newPost(Model model) {
+        Post post = Post.builder()
+                .title("")
+                .subTitle("")
+                .content("")
+                .isPublished(false)
+                .audience("everyone")
+                .comments("everyone")
+                .sendEmail(true)
+                .build();
+        model.addAttribute("post", post);
+        return "editor"; // → templates/editor.html
     }
 
-    // Save or update post
     @PostMapping("/save")
-    public String savePost(@RequestParam("title") String title,
-                           @RequestParam("content") String content,
-                           @RequestParam(value = "subtitle", required = false) String subtitle,
-                           @RequestParam(value = "isPublished", defaultValue = "true") boolean isPublished) {
+    public String savePost(
+            @ModelAttribute Post post,
+            @RequestParam(required = false) String scheduledAt,
+            @RequestParam(required = false) String audience,
+            @RequestParam(required = false) String comments,
+            @RequestParam(required = false) String tags,
+            @RequestParam(defaultValue = "true") boolean sendEmail,
+            RedirectAttributes ra) {
 
-        Post post = Post.builder()
-                .title(title)
-                .content(content)
-                .isPublished(isPublished)
-//                .author()
-                .build();
+        post.setAudience(audience != null ? audience : "everyone");
+        post.setComments(comments != null ? comments : "everyone");
+        post.setSendEmail(sendEmail);
 
-        postService.save(post);
+        if (scheduledAt != null && !scheduledAt.isBlank()) {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            post.setScheduledAt(LocalDateTime.parse(scheduledAt, fmt));
+        } else {
+            post.setScheduledAt(null);
+        }
 
+        postService.savePost(post, tags);
+
+        ra.addFlashAttribute("success", "Post saved!");
         return "redirect:/posts/" + post.getId();
     }
 
-    // Show edit form
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Post post = postService.findById(id);
-        model.addAttribute("post", post);
-        return "edit-post";
-    }
-
-    // Update post
-    @PostMapping("/update/{id}")
-    public String updatePost(@PathVariable Long id,
-                             @RequestParam("title") String title,
-                             @RequestParam("content") String content,
-                             @RequestParam(value = "isPublished", defaultValue = "true") Boolean isPublished) {
-
-        Post post = postService.findById(id);
-        post.setTitle(title);
-        post.setContent(content);
-        post.setIsPublished(isPublished);
-
-        postService.update(post);
-
-        return "redirect:/posts/" + id;
-    }
-
-    // View single post
     @GetMapping("/{id}")
     public String viewPost(@PathVariable Long id, Model model) {
         Post post = postService.findById(id);
+        if (post == null) return "redirect:/";
         model.addAttribute("post", post);
         return "post/view";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editPost(@PathVariable Long id, Model model) {
+        Post post = postService.findById(id);
+        if (post == null) return "redirect:/";
+        model.addAttribute("post", post);
+        return "editor";
     }
 }
