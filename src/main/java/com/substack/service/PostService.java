@@ -1,5 +1,6 @@
 package com.substack.service;
 
+import com.substack.exceptions.ResourceNotFoundException;
 import com.substack.model.Post;
 import com.substack.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
