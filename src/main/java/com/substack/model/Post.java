@@ -18,6 +18,8 @@ public class Post {
 
     private String title;
 
+    private String subTitle;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -42,4 +44,9 @@ public class Post {
     )
     private List<Users> coAuthor;
 
+    private Integer likeCount;
+    
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OrderBy("createdAt ASC")
+    private List<Comment> comments;
 }
