@@ -32,5 +32,14 @@ public class Post {
     private List<Tag> tags;
 
     @ManyToOne
-    private User author;
+    private Users author;
+
+    @ManyToMany
+    @JoinTable(
+            name = "post_author",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "co_author_id")
+    )
+    private List<Users> coAuthor;
+
 }
