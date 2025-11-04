@@ -2,6 +2,10 @@ package com.substack.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -10,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "posts")
 public class Post {
 
     @Id
@@ -32,7 +37,7 @@ public class Post {
     private List<Tag> tags;
 
     @ManyToOne
-    private Users author;
+    private User author;
 
     @ManyToMany
     @JoinTable(
@@ -40,8 +45,16 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "co_author_id")
     )
-    private List<Users> coAuthor;
+    private List<User> coAuthor;
 
     private List<MediaFile> files;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
 }
