@@ -42,6 +42,7 @@ public class Post {
     )
     private List<Users> coAuthor;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MediaFile> files;
 
 }
