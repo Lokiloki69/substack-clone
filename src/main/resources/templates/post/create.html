@@ -3,48 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>New Post | Substack Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
-        body {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin:0;}
-        .container {max-width: 700px; margin: 0 auto; padding: 2rem 1rem;}
-        .toolbar {position:sticky; top:0; background:white; z-index:10; border-bottom:1px solid #eee; padding:1rem 0;}
-        .btn {padding:8px 16px; border-radius:999px; font-weight:600; cursor:pointer;}
-        .btn-draft {background:transparent; color:#666; border:1px solid #ddd;}
-        .btn-preview {background:#fff; color:#ff5a00; border:1px solid #ff5a00;}
-        .btn-continue {background:#ff5a00; color:white;}
-        .title {font-size:3rem; font-weight:700; border:none; outline:none; width:100%; margin:2rem 0 .5rem;}
-        .subtitle {font-size:1.5rem; color:#666; border:none; outline:none; width:100%; margin-bottom:1rem;}
-        #editor {min-height:60vh; font-size:1.25rem; line-height:1.7;}
+        :root { --orange: #ff5a00; }
+        body {font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; background:#fafafa;}
+        .container {max-width:720px; margin:0 auto; padding:2rem 1rem;}
+        .toolbar {position:sticky;top:0;background:white;z-index:10;border-bottom:1px solid #eee;padding:1rem 0;
+                  display:flex;justify-content:space-between;align-items:center;}
+        .btn {padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer;transition:.2s;}
+        .btn-draft {background:transparent;color:#666;border:1px solid #ddd;}
+        .btn-preview {background:#fff;color:var(--orange);border:1px solid var(--orange);}
+        .btn-continue {background:var(--orange);color:white;}
+        .title {font-size:3rem;font-weight:700;border:none;outline:none;width:100%;margin:2rem 0 .5rem;}
+        .subtitle {font-size:1.5rem;color:#666;border:none;outline:none;width:100%;margin-bottom:1rem;}
+        #editor {min-height:60vh;font-size:1.25rem;line-height:1.7;}
         .ql-editor {padding:0 !important;}
-        .media-wrapper {position:relative; display:inline-block; margin:1rem 0;}
+
+        /* MEDIA */
+        .media-wrapper {position:relative;display:inline-block;margin:1rem 0;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1);}
         .remove-btn {
-          position:absolute; top:8px; right:8px; background:#ff5a00; color:white;
-          border:none; border-radius:50%; width:28px; height:28px; font-size:16px;
-          cursor:pointer; opacity:0; transition:opacity .2s;
+            position:absolute;top:12px;right:12px;background:var(--orange);color:white;border:none;
+            border-radius:50%;width:36px;height:36px;font-size:20px;font-weight:bold;cursor:pointer;
+            opacity:0;transition:opacity .2s;z-index:20;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.3);
         }
-        .media-wrapper:hover .remove-btn {opacity:1;}
-        .drop-zone {border:3px dashed #ff5a00; border-radius:12px; padding:40px; text-align:center;
-                    background:#fff8f5; cursor:pointer; margin:2rem 0;}
+        .media-wrapper:hover .remove-btn {opacity:1 !important;}
+        .media-wrapper img, .media-wrapper video {max-width:100%;border-radius:8px;display:block;}
+
+        /* DROP ZONE */
+        .drop-zone {border:3px dashed var(--orange);border-radius:12px;padding:40px;text-align:center;
+                    background:#fff8f5;cursor:pointer;margin:2rem 0;transition:.2s;}
         .drop-zone.dragover {background:#ffece5;}
-        .progress {height:6px; background:#eee; border-radius:3px; margin-top:10px; overflow:hidden;}
-        .progress-bar {height:100%; background:#ff5a00; width:0; transition:width .3s;}
+        .progress {height:6px;background:#eee;border-radius:3px;margin-top:10px;overflow:hidden;}
+        .progress-bar {height:100%;background:var(--orange);width:0;transition:.3s;}
+
+        /* PUBLISH */
+        .publish-toggle {display:flex;align-items:center;gap:12px;font-size:1.1rem;margin:2rem 0;}
+        .switch {position:relative;display:inline-block;width:52px;height:30px;}
+        .switch input {opacity:0;width:0;height:0;}
+        .slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;
+                 transition:.4s;border-radius:34px;}
+        .slider:before {position:absolute;content:"";height:22px;width:22px;left:4px;bottom:4px;
+                        background:white;transition:.4s;border-radius:50%;}
+        input:checked + .slider {background:var(--orange);}
+        input:checked + .slider:before {transform:translateX(22px);}
     </style>
 </head>
 <body>
 <div class="container">
 
     <!-- Top Bar -->
-    <div class="toolbar" style="display:flex; justify-content:space-between; align-items:center;">
-        <button class="btn btn-draft">← Draft</button>
+    <div class="toolbar">
+        <button class="btn btn-draft" onclick="history.back()">← Draft</button>
         <div>
-            <button class="btn btn-preview">Preview</button>
-            <button class="btn btn-continue">Continue</button>
+            <button class="btn btn-preview" onclick="preview()">Preview</button>
+            <button class="btn btn-continue" onclick="save()">Continue</button>
         </div>
     </div>
 
     <!-- Quill Toolbar -->
     <div id="toolbar">
-        <select class="ql-header"><option value="1">Heading 1</option><option value="2">Heading 2</option><option selected>Normal</option></select>
+        <select class="ql-header">
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option selected>Normal</option>
+        </select>
         <button class="ql-bold"></button>
         <button class="ql-italic"></button>
         <button class="ql-link"></button>
@@ -54,113 +77,139 @@
         <button class="ql-list" value="bullet"></button>
     </div>
 
-    <form th:action="@{/posts/save}" th:object="${post}" method="post">
+    <!-- Form -->
+    <form th:action="@{/posts/save}" th:object="${post}" method="post" enctype="multipart/form-data">
         <input type="text" th:field="*{title}" class="title" placeholder="Title" required />
-        <input type="text" th:field="*{subtitle}" class="subtitle" placeholder="Add a subtitle..." />
+        <input type="text" th:field="*{subTitle}" class="subtitle" placeholder="Add a subtitle..." />
 
-        <div class="author" style="display:flex; align-items:center; gap:8px; margin:2rem 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin:2rem 0;">
             <img src="https://i.pravatar.cc/32" width="32" style="border-radius:50%;">
-            <span style="font-weight:500;">vilas poojari</span><span style="color:#aaa;">+</span>
+            <span style="font-weight:500;">vilas poojari</span>
         </div>
 
-        <!-- Quill Editor -->
+        <!-- Editor -->
         <div id="editor">
             <p>Start writing...</p>
             <div class="drop-zone" id="dropZone">
-                Drop images or videos here<br><small>or click to upload</small>
+                Drop images or videos here<br>
+                <small>or click to upload (max 200MB)</small>
                 <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
             </div>
         </div>
         <textarea th:field="*{content}" id="content" style="display:none;"></textarea>
-
         <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none;">
+
+        <!-- Publish -->
+        <div class="publish-toggle">
+            <label class="switch">
+                <input type="checkbox" th:field="*{isPublished}">
+                <span class="slider"></span>
+            </label>
+            <span>Publish now</span>
+        </div>
+
         <button type="submit" id="saveBtn" style="display:none;">Save</button>
     </form>
 
-    <div style="text-align:center; margin:2rem 0;">
-        <a href="#" style="color:#666; font-size:0.9rem;">Edit email header/footer →</a>
+    <div style="text-align:center;margin:2rem 0;">
+        <a href="#" style="color:#666;font-size:0.9rem;">Edit email header/footer →</a>
     </div>
 </div>
 
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
     const quill = new Quill('#editor', {
-      modules: { toolbar: '#toolbar' },
-      theme: 'snow'
+        modules: { toolbar: '#toolbar' },
+        theme: 'snow'
     });
 
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const progressBar = document.getElementById('progressBar');
 
-    // ── UPLOAD ──
+    // Upload
     dropZone.onclick = () => fileInput.click();
-    ['dragenter','dragover'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.add('dragover')));
-    ['dragleave','drop'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.remove('dragover')));
+    ['dragenter','dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('dragover')));
+    ['dragleave','drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('dragover')));
     dropZone.ondrop = e => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
     fileInput.onchange = () => handleFiles(fileInput.files);
 
     function handleFiles(files) {
-      [...files].forEach(file => {
-        if (!file.type.match('image.*') && !file.type.match('video.*')) return;
-        const formData = new FormData(); formData.append('file', file);
+        [...files].forEach(file => {
+            if (!file.type.match('image.*') && !file.type.match('video.*')) return;
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/銷售/media', true);
-        xhr.upload.onprogress = e => {
-          if (e.lengthComputable) progressBar.style.width = (e.loaded / e.total)*100 + '%';
-        };
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            const {url} = JSON.parse(xhr.responseText);
-            const range = quill.getSelection(true);
-            const index = range ? range.index : quill.getLength();
+            const formData = new FormData();
+            formData.append('file', file);
 
-            // Insert media with removable wrapper
-            const wrapper = `<div class="media-wrapper">
-              <button class="remove-btn" onclick="removeMedia(this)">×</button>
-              ${file.type.startsWith('image')
-                ? `<img src="${url}" style="max-width:100%; border-radius:8px;">`
-                : `<video src="${url}" controls style="max-width:100%; border-radius:8px;"></video>`
-              }
-            </div><p></p>`;
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload/media', true);
+            xhr.upload.onprogress = e => {
+                if (e.lengthComputable) {
+                    progressBar.style.width = (e.loaded / e.total) * 100 + '%';
+                }
+            };
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const {url} = JSON.parse(xhr.responseText);
+                    const id = 'm' + Date.now();
+                    const isVideo = file.type.startsWith('video');
+                    const tag = isVideo ? 'video' : 'img';
+                    const attrs = isVideo ? 'controls playsinline' : '';
 
-            quill.clipboard.dangerouslyPasteHTML(index, wrapper);
-            quill.setSelection(index + 1);
-            progressBar.style.width = '0%';
-          }
-        };
-        xhr.send(formData);
-      });
+                    const html = `
+                        <div class="media-wrapper" data-id="${id}">
+                            <button class="remove-btn" onclick="removeMedia('${id}')">×</button>
+                            <${tag} src="${url}" ${attrs} style="max-width:100%;border-radius:8px;"></${tag}>
+                        </div><p><br></p>`;
+
+                    const range = quill.getSelection() || { index: quill.getLength() };
+                    quill.clipboard.dangerouslyPasteHTML(range.index, html);
+                    quill.setSelection(range.index + 1);
+                    progressBar.style.width = '0%';
+                }
+            };
+            xhr.onerror = () => alert('Upload failed');
+            xhr.send(formData);
+        });
     }
 
-    // ── REMOVE ──
-    window.removeMedia = function(btn) {
-      const wrapper = btn.parentElement;
-      const delta = quill.getContents();
-      const ops = delta.ops;
-      let deleteLength = 0;
-      let found = false;
-
-      // Find the exact blot (image/video) under the wrapper
-      quill.getLines().forEach(line => {
-        line.domNode.querySelectorAll('.media-wrapper').forEach(w => {
-          if (w === wrapper) {
-            const index = quill.getIndex(line);
-            // count characters inside wrapper + the <p></p> after
-            deleteLength = w.textContent.length + 2; // +2 for the empty <p>
-            quill.deleteText(index, deleteLength);
-            found = true;
-          }
-        });
-      });
+    // Remove
+    window.removeMedia = id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) { el.remove(); quill.update(); }
     };
 
-    // ── SYNC & AUTO-SAVE ──
-    document.querySelector('form').onsubmit = () => {
-      document.getElementById('content').value = quill.root.innerHTML;
-    };
-    setInterval(() => document.getElementById('saveBtn').click(), 5000);
+    // Sync & Auto-save
+    const sync = () => document.getElementById('content').value = quill.root.innerHTML;
+    document.querySelector('form').onsubmit = sync;
+    setInterval(() => { sync(); document.getElementById('saveBtn').click(); }, 5000);
+
+    // Preview
+    function preview() {
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Preview</title>
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <style>
+                    body {font-family:-apple-system,sans-serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.7;background:white;}
+                    h1 {font-size:3rem;margin:0;}
+                    .subtitle {font-size:1.5rem;color:#666;font-style:italic;margin:0.5rem 0 2rem;}
+                    img,video {max-width:100%;border-radius:8px;margin:1rem 0;}
+                </style>
+            </head>
+            <body>
+                <h1>${document.querySelector('.title').value || 'Untitled'}</h1>
+                <p class="subtitle">${document.querySelector('.subtitle').value || ''}</p>
+                ${quill.root.innerHTML}
+            </body>
+            </html>
+        `);
+    }
+
+    function save() { sync(); document.getElementById('saveBtn').click(); }
 </script>
 </body>
 </html>

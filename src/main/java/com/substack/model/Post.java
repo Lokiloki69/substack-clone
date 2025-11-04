@@ -23,7 +23,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private boolean isPublished;
+    private Boolean isPublished;
 
     @ManyToMany
     @JoinTable(

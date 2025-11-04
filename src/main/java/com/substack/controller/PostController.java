@@ -55,12 +55,12 @@ public class PostController {
     public String updatePost(@PathVariable Long id,
                              @RequestParam("title") String title,
                              @RequestParam("content") String content,
-                             @RequestParam(value = "isPublished", defaultValue = "true") boolean isPublished) {
+                             @RequestParam(value = "isPublished", defaultValue = "true") Boolean isPublished) {
 
         Post post = postService.findById(id);
         post.setTitle(title);
         post.setContent(content);
-        post.setPublished(isPublished);
+        post.setIsPublished(isPublished);
 
         postService.update(post);
 
