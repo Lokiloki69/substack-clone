@@ -31,7 +31,7 @@ public class PostController {
                 .sendEmail(true)
                 .build();
         model.addAttribute("post", post);
-        return "editor"; // → templates/editor.html
+        return "post/create";
     }
 
     @PostMapping("/save")

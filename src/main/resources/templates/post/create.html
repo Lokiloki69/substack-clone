@@ -163,6 +163,37 @@
     function openModal() { modal.classList.add('active'); }
     function closeModal() { modal.classList.remove('active'); }
 
+    // === PREVIEW — WORKS 100% ===
+    function preview() {
+        const title = document.querySelector('.title').value || 'Untitled';
+        const subtitle = document.querySelector('.subtitle').value;
+        const content = quill.root.innerHTML;
+
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Preview - ${title}</title>
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <style>
+                    body {font-family:-apple-system,sans-serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.7;background:white;color:#111;}
+                    h1 {font-size:3rem;margin:0 0 .5rem;font-weight:700;}
+                    .subtitle {font-size:1.5rem;color:#666;font-style:italic;margin:0 0 2rem;}
+                    img,video {max-width:100%;border-radius:8px;margin:1.5rem 0;}
+                    p {margin:1rem 0;}
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                ${subtitle ? `<p class="subtitle">${subtitle}</p>` : ''}
+                ${content}
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+
     // Upload
     dropZone.onclick = () => fileInput.click();
     ['dragenter','dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('dragover')));
@@ -215,7 +246,7 @@
         }
     };
 
-    // SCHEDULE PICKER — WORKS
+    // SCHEDULE PICKER
     document.getElementById('scheduleToggle').onchange = () => {
         const pickerDiv = document.getElementById('datetimePicker');
         pickerDiv.style.display = this.checked ? 'block' : 'none';
@@ -241,12 +272,10 @@
     // PUBLISH
     document.getElementById('publishBtn').onclick = () => {
         document.getElementById('content').value = quill.root.innerHTML;
-
         document.getElementById('audience').value = document.querySelector('input[name="modal-audience"]:checked').value;
         document.getElementById('comments').value = document.querySelector('input[name="modal-comments"]:checked').value;
         document.getElementById('tags').value = tags.join(',');
         document.getElementById('sendEmail').value = document.getElementById('modalSendEmail').checked;
-
         document.getElementById('saveBtn').click();
     };
 
