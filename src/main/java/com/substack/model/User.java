@@ -43,7 +43,7 @@ public class User {
 
     // 🔹 Activity timestamps
     @CreationTimestamp
-    @Column(name = "cerated_at")
+    @Column(name = "created_at")
     private Instant createdAt;
 
     @UpdateTimestamp

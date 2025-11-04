@@ -1,7 +1,6 @@
 package com.substack.config;
-
-import com.reddit.clone.service.auth.CustomLogoutSuccessHandler;
-import com.reddit.clone.service.auth.CustomUserDetailsService;
+import com.substack.service.auth.CustomLogoutSuccessHandler;
+import com.substack.service.auth.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,8 +1,6 @@
 package com.substack.service.auth;
-
-import com.reddit.clone.entity.User;
-import com.reddit.clone.repository.UserRepository;
-import com.reddit.clone.service.cachecleaner.CacheCleaner;
+import com.substack.model.User;
+import com.substack.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,14 +14,12 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final CacheCleaner cacheCleaner;
 
-    public AuthService(UserRepository userRepository, CacheCleaner cacheCleaner) {
+    public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.cacheCleaner = cacheCleaner;
     }
 
-    public  User getCurrentUser() {
+    public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
@@ -35,7 +31,6 @@ public class AuthService {
         }
 
         log.info("No authenticated user found");
-        cacheCleaner.clearAllCaches();
         return null;
     }
 }

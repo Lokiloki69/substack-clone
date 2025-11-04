@@ -1,7 +1,6 @@
 package com.substack.service.auth;
-
-import com.reddit.clone.entity.User;
-import com.reddit.clone.repository.UserRepository;
+import com.substack.model.User;
+import com.substack.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(!user.getEnabled())
+//                .disabled(!user.getEnabled())
                 .build();
     }
 }
