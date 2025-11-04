@@ -42,4 +42,6 @@ public class Post {
     )
     private List<Users> coAuthor;
 
+    private List<MediaFile> files;
+
 }
