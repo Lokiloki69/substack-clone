@@ -23,10 +23,12 @@ public class Post {
 
     private String title;
 
+    private String subTitle;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private boolean isPublished;
+    private Boolean isPublished;
 
     @ManyToMany
     @JoinTable(

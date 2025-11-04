@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="${post.title}">Post Title</title>
+    <style>
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            font-family: 'Georgia', serif;
+        }
+        .post-title {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .post-meta {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .post-content {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1 class="post-title" th:text="${post.title}">Post Title</h1>
 
+    <div class="post-meta">
+        <span>By <span th:text="${post.author.name}">Author</span></span> ·
+        <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Date</span>
+    </div>
+
+    <!-- Use th:utext to render HTML without escaping -->
+    <div class="post-content" th:utext="${post.content}">
+        Post content will appear here
+    </div>
+
+    <div style="margin-top: 40px;">
+        <a th:href="@{/posts/edit/{id}(id=${post.id})}">Edit</a> |
+        <a th:href="@{/posts}">Back to Posts</a>
+    </div>
+</div>
 </body>
 </html>

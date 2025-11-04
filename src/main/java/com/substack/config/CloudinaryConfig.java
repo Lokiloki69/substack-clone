@@ -22,7 +22,6 @@ public class CloudinaryConfig {
     @Value("${cloudinary.secure}")
     private boolean secure;
 
-    // This method creates and configures the singleton Cloudinary bean
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(ObjectUtils.asMap(
