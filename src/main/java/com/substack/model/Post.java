@@ -44,9 +44,4 @@ public class Post {
     )
     private List<Users> coAuthor;
 
-    private Integer likeCount;
-    
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @OrderBy("createdAt ASC")
-    private List<Comment> comments;
 }

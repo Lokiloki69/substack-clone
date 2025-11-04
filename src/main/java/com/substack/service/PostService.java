@@ -1,31 +1,40 @@
 package com.substack.service;
 
-import com.substack.exceptions.ResourceNotFoundException;
 import com.substack.model.Post;
 import com.substack.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository postRepository;
+    @Autowired
+    private PostRepository postRepository;
 
-    public Post createPost(Post post) {
-        post.setPublished(false);
+    @Transactional
+    public Post save(Post post) {
         return postRepository.save(post);
     }
 
-    public Post getPostById(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+    @Transactional
+    public Post update(Post post) {
+        return postRepository.save(post);
     }
 
-    public List<Post> getAllPosts() {
+    public Post findById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+    public List<Post> findAll() {
         return postRepository.findAll();
     }
-}
 
+    @Transactional
+    public void delete(Long id) {
+        postRepository.deleteById(id);
+    }
+}
