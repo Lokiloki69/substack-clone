@@ -1,7 +1,6 @@
 package com.substack.controller;
 
 import com.substack.model.Post;
-import com.substack.model.Users;
 import com.substack.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -49,6 +49,7 @@ public class Post {
     )
     private List<User> coAuthor;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MediaFile> files;
 
     @CreationTimestamp

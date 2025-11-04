@@ -26,14 +26,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true, updatable = false)
     private String username;  // for public URL slug (e.g., substack.com/@nivedita)
     private String bio;       // short user bio
 
     // 🔹 Auth info
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role; // READER, WRITER, ADMIN
 
     // 🔹 Profile details
     private String profileImageUrl; // Cloudinary URL
@@ -52,10 +50,25 @@ public class User {
     @Column(name = "updated_at", updatable = false)
     private Instant updatedAt;
 
-    // 🔹 Relationships
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<User> subscriptions;
+    // Many-to-many for subscriptions (users can follow authors)
+    @ManyToMany
+    @JoinTable(
+            name = "subscriptions",
+            joinColumns = @JoinColumn(name = "subscriber_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<User> subscriptions;  // authors this user follows
+
+    // Reverse side (authors can see their subscribers)
+    @ManyToMany(mappedBy = "subscriptions")
+    private List<User> subscribers;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Activity> activities;
 }
