@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Posts</title>
+</head>
+<body>
+<h1>Posts</h1>
+
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+    </tr>
+    <tr th:each="post : ${posts}">
+        <td th:text="${post.title}"></td>
+        <td th:text="${post.author.username}"></td>
+    </tr>
+</table>
+
+<a href="/posts/new">Create New Post</a>
+</body>
+</html>
