@@ -41,7 +41,7 @@ public class Post {
     private List<Tag> tags;
 
     @ManyToOne
-    private Users author;
+    private User author;
 
     @ManyToMany
     @JoinTable(
