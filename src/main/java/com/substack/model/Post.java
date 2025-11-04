@@ -2,6 +2,7 @@ package com.substack.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -10,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,12 +21,16 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private boolean published;
+    private boolean isPublished;
+
+    @ManyToMany
+    @JoinTable(
+            name = "post_tag",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
 
     @ManyToOne
     private User author;
-
-    @ManyToOne
-    private Publication publication;
 }
-
