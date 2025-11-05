@@ -1,257 +1,241 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Post | Substack Clone</title>
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - Substack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
     <style>
-        :root { --orange:#ff5a00; --gray:#666; }
-        body {font-family:-apple-system,sans-serif;margin:0;background:#fafafa;}
-        .container {max-width:720px;margin:auto;padding:2rem 1rem;}
-        .toolbar {position:sticky;top:0;background:white;z-index:10;border-bottom:1px solid #eee;padding:1rem 0;display:flex;justify-content:space-between;align-items:center;}
-        .btn {padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer;}
-        .btn-continue {background:var(--orange);color:white;}
-        .title {font-size:3rem;font-weight:700;border:none;outline:none;width:100%;margin:2rem 0 .5rem;}
-        .subtitle {font-size:1.5rem;color:var(--gray);border:none;outline:none;width:100%;margin-bottom:1rem;}
-        #editor {min-height:60vh;}
-        .ql-editor {padding:0 !important;}
-        .drop-zone {border:3px dashed var(--orange);border-radius:12px;padding:40px;text-align:center;background:#fff8f5;cursor:pointer;margin:2rem 0;}
-        .progress {height:6px;background:#eee;border-radius:3px;overflow:hidden;}
-        .progress-bar {height:100%;background:var(--orange);width:0;transition:.3s;}
-        .modal {display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
-        .modal.active {display:flex;}
-        .modal-content {background:white;border-radius:12px;width:90%;max-width:520px;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-        .modal-header {padding:1.5rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
-        .modal-header h2 {margin:0;font-size:1.4rem;}
-        .close {font-size:2rem;cursor:pointer;color:#aaa;}
-        .modal-body {padding:1.5rem;}
-        .section {margin-bottom:1.8rem;}
-        .section h3 {margin:0 0 .6rem;font-size:1rem;color:var(--gray);font-weight:600;}
-        .radio-group {display:flex;flex-direction:column;gap:.9rem;}
-        .radio {display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
-        .radio input {margin-top:2px;}
-        .radio-label {font-weight:500;}
-        .radio-sub {color:#888;font-size:.9rem;margin-left:28px;}
-        .tag-input {display:flex;gap:8px;flex-wrap:wrap;border:1px solid #ddd;border-radius:8px;padding:10px;align-items:center;}
-        .tag {background:#f0f0f0;padding:6px 12px;border-radius:999px;font-size:.9rem;display:flex;gap:6px;}
-        .tag-close {cursor:pointer;font-weight:bold;}
-        .tag-field {border:none;outline:none;flex:1;min-width:140px;font-size:1rem;}
-        .checkbox {display:flex;align-items:center;gap:12px;margin:1.2rem 0;}
-        .checkbox input {width:18px;height:18px;}
-        .datetime {margin-top:.8rem;display:none;}
-        .datetime input {width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:1rem;background:white;cursor:pointer;}
-        .modal-footer {padding:1rem 1.5rem;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:12px;}
-        .btn-cancel {background:#f5f5f5;color:#333;padding:10px 20px;border-radius:999px;cursor:pointer;}
-        .btn-publish {background:var(--orange);color:white;padding:10px 24px;border-radius:999px;font-weight:600;cursor:pointer;}
+        :root {
+            --primary-color: #FF6D00;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --border-color: #E0E0E0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #F5F5F5;
+        }
+
+        .editor-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .editor-header {
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-title {
+            font-size: 32px;
+            font-weight: 700;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .editor-subtitle {
+            font-size: 18px;
+            color: var(--text-light);
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .editor-body {
+            padding: 30px;
+        }
+
+        .ql-container {
+            font-size: 16px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .ql-editor {
+            min-height: 400px;
+            padding: 20px;
+        }
+
+        .editor-sidebar {
+            padding: 30px;
+            background: #F5F5F5;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .editor-sidebar h5 {
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #E65100;
+        }
+
+        .btn-draft {
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-draft:hover {
+            background: var(--bg-light);
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="toolbar">
-        <button class="btn" onclick="history.back()">← Draft</button>
-        <div>
-            <button class="btn" onclick="preview()">Preview</button>
-            <button class="btn btn-continue" onclick="openModal()">Continue</button>
+<!-- Navbar -->
+<nav class="navbar navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-size: 24px; color: var(--primary-color); font-weight: 700;">Substack</a>
+        <a href="/" class="btn btn-outline-secondary btn-sm">Back</a>
+    </div>
+</nav>
+
+<form method="post" action="/posts/save" class="editor-container">
+    <div class="editor-header">
+        <input type="text" class="editor-title" name="title" placeholder="Post Title" required>
+        <input type="text" class="editor-subtitle" name="subTitle" placeholder="Add a subtitle (optional)">
+    </div>
+
+    <div class="editor-body">
+        <div id="editor"></div>
+        <input type="hidden" name="content" id="contentInput">
+    </div>
+
+    <div class="editor-sidebar">
+        <h5>📰 Publish Settings</h5>
+
+        <div class="form-group">
+            <label>Publication</label>
+            <select name="publicationId" class="form-control">
+                <option value="">Select a publication (optional)</option>
+                <option th:each="pub : ${publications}" th:value="${pub.id}" th:text="${pub.name}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Audience</label>
+            <select name="audience" class="form-control">
+                <option value="everyone">Everyone</option>
+                <option value="subscribers">Subscribers only</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Comments</label>
+            <select name="comments" class="form-control">
+                <option value="everyone">Everyone can comment</option>
+                <option value="subscribers">Subscribers only</option>
+                <option value="none">Disable comments</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Schedule Publication</label>
+            <input type="datetime-local" name="scheduledAt" class="form-control" placeholder="Leave empty to publish now">
+        </div>
+
+        <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <input type="text" name="tags" class="form-control" placeholder="e.g., tech, startup, design">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" name="sendEmail" value="true" checked id="sendEmail">
+            <label for="sendEmail" style="margin: 0;">📧 Send email to subscribers</label>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" name="isPublished" value="true" id="isPublished">
+            <label for="isPublished" style="margin: 0;">🚀 Publish now</label>
         </div>
     </div>
 
-    <div id="toolbar">
-        <select class="ql-header"><option value="1">Heading 1</option><option value="2">Heading 2</option><option selected>Normal</option></select>
-        <button class="ql-bold"></button><button class="ql-italic"></button><button class="ql-link"></button>
-        <button class="ql-image"></button><button class="ql-video"></button>
-        <button class="ql-list" value="ordered"></button><button class="ql-list" value="bullet"></button>
+    <div class="action-buttons">
+        <button type="submit" class="btn-draft" onclick="document.getElementById('isPublished').checked = false;">Save as Draft</button>
+        <button type="submit" class="btn-save" onclick="document.getElementById('isPublished').checked = true;">Publish Post</button>
     </div>
+</form>
 
-    <form id="postForm" th:action="@{/posts/save}" th:object="${post}" method="post" enctype="multipart/form-data">
-        <input type="text" th:field="*{title}" class="title" placeholder="Title" required />
-        <input type="text" th:field="*{subTitle}" class="subtitle" placeholder="Add a subtitle..." />
-        <div style="display:flex;align-items:center;gap:8px;margin:2rem 0;">
-            <img src="https://i.pravatar.cc/32" width="32" style="border-radius:50%;">
-            <span style="font-weight:500;">vilas poojari</span>
-        </div>
-
-        <div id="editor">
-            <p>Start writing...</p>
-            <div class="drop-zone" id="dropZone">
-                Drop images or videos here<br><small>or click to upload</small>
-                <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-            </div>
-        </div>
-        <textarea th:field="*{content}" id="content" style="display:none;"></textarea>
-        <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none;">
-
-        <!-- Hidden Fields -->
-        <input type="hidden" name="audience" id="audience" value="everyone">
-        <input type="hidden" name="comments" id="comments" value="everyone">
-        <input type="hidden" name="tags" id="tags" value="">
-        <input type="hidden" name="scheduledAt" id="scheduledAt">
-        <input type="hidden" name="sendEmail" id="sendEmail" value="true">
-        <input type="hidden" th:field="*{isPublished}" value="true">
-        <button type="submit" id="saveBtn" style="display:none;">Save</button>
-    </form>
-</div>
-
-<!-- FULL PUBLISH MODAL -->
-<div class="modal" id="publishModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Publish</h2>
-            <span class="close" onclick="closeModal()">×</span>
-        </div>
-        <div class="modal-body">
-            <!-- Audience -->
-            <div class="section">
-                <h3>Audience</h3>
-                <div class="radio-group">
-                    <label class="radio"><input type="radio" name="modal-audience" value="everyone" checked><span class="radio-label">Everyone</span></label>
-                    <label class="radio"><input type="radio" name="modal-audience" value="paid"><span class="radio-label">Paid subscribers only</span><div class="radio-sub">(Turn on paid subscriptions)</div></label>
-                </div>
-            </div>
-
-            <!-- Comments -->
-            <div class="section">
-                <h3>Allow comments from...</h3>
-                <div class="radio-group">
-                    <label class="radio"><input type="radio" name="modal-comments" value="everyone" checked><span class="radio-label">Everyone</span></label>
-                    <label class="radio"><input type="radio" name="modal-comments" value="none"><span class="radio-label">No one (disable comments)</span></label>
-                </div>
-            </div>
-
-            <!-- Tags -->
-            <div class="section">
-                <h3>Add tags</h3>
-                <div class="tag-input" id="tagInput">
-                    <input type="text" class="tag-field" placeholder="new tag" onkeydown="addTag(event)">
-                </div>
-            </div>
-
-            <!-- Delivery -->
-            <div class="checkbox">
-                <input type="checkbox" id="modalSendEmail" checked>
-                <label for="modalSendEmail">Send via email and the Substack app</label>
-            </div>
-
-            <!-- Scheduling -->
-            <div class="checkbox">
-                <input type="checkbox" id="scheduleToggle">
-                <label for="scheduleToggle">Schedule time to publish</label>
-            </div>
-            <div class="datetime" id="datetimePicker">
-                <input type="text" id="datetime" readonly placeholder="Click to select date & time">
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-            <button class="btn-publish" id="publishBtn">Publish now</button>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    const quill = new Quill('#editor', { modules: { toolbar: '#toolbar' }, theme: 'snow' });
-    const modal = document.getElementById('publishModal');
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const progressBar = document.getElementById('progressBar');
-    let tags = [];
-    let picker = null;
-
-    function openModal() { modal.classList.add('active'); }
-    function closeModal() { modal.classList.remove('active'); }
-
-    // Upload
-    dropZone.onclick = () => fileInput.click();
-    ['dragenter','dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('dragover')));
-    ['dragleave','drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('dragover')));
-    dropZone.ondrop = e => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
-    fileInput.onchange = () => handleFiles(fileInput.files);
-
-    function handleFiles(files) {
-        [...files].forEach(file => {
-            if (!file.type.match('image.*') && !file.type.match('video.*')) return;
-            const formData = new FormData(); formData.append('file', file);
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/upload/media', true);
-            xhr.upload.onprogress = e => { if (e.lengthComputable) progressBar.style.width = (e.loaded / e.total) * 100 + '%'; };
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    const {url} = JSON.parse(xhr.responseText);
-                    const id = 'm' + Date.now();
-                    const tag = file.type.startsWith('video') ? 'video' : 'img';
-                    const html = `<div class="media-wrapper" data-id="${id}">
-                        <button class="remove-btn" onclick="removeMedia('${id}')">×</button>
-                        <${tag} src="${url}" ${tag==='video'?'controls':''} style="max-width:100%;border-radius:8px;"></${tag}>
-                    </div><p><br></p>`;
-                    const range = quill.getSelection() || { index: quill.getLength() };
-                    quill.clipboard.dangerouslyPasteHTML(range.index, html);
-                    progressBar.style.width = '0%';
-                }
-            };
-            xhr.send(formData);
-        });
-    }
-
-    window.removeMedia = id => {
-        const el = document.querySelector(`[data-id="${id}"]`);
-        if (el) { el.remove(); quill.update(); }
-    };
-
-    // Tags
-    window.addTag = (e) => {
-        if (e.key === 'Enter' && e.target.value.trim()) {
-            const tag = e.target.value.trim();
-            if (!tags.includes(tag)) {
-                tags.push(tag);
-                const span = document.createElement('span');
-                span.className = 'tag';
-                span.innerHTML = `${tag} <span class="tag-close" onclick="this.parentElement.remove();tags=tags.filter(t=>t!=='${tag}')">×</span>`;
-                e.target.before(span);
-            }
-            e.target.value = '';
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Start writing...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+            ]
         }
-    };
+    });
 
-    // SCHEDULE PICKER — WORKS
-    document.getElementById('scheduleToggle').onchange = () => {
-        const pickerDiv = document.getElementById('datetimePicker');
-        pickerDiv.style.display = this.checked ? 'block' : 'none';
-        if (this.checked) {
-            if (picker) picker.destroy();
-            picker = flatpickr('#datetime', {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i:S",
-                minDate: "today",
-                onChange: (sel, str) => {
-                    document.getElementById('scheduledAt').value = str;
-                    document.getElementById('publishBtn').textContent = 'Schedule';
-                }
-            });
-            picker.open();
-        } else {
-            document.getElementById('publishBtn').textContent = 'Publish now';
-            document.getElementById('scheduledAt').value = '';
-            if (picker) { picker.destroy(); picker = null; }
-        }
-    };
-
-    // PUBLISH
-    document.getElementById('publishBtn').onclick = () => {
-        document.getElementById('content').value = quill.root.innerHTML;
-
-        document.getElementById('audience').value = document.querySelector('input[name="modal-audience"]:checked').value;
-        document.getElementById('comments').value = document.querySelector('input[name="modal-comments"]:checked').value;
-        document.getElementById('tags').value = tags.join(',');
-        document.getElementById('sendEmail').value = document.getElementById('modalSendEmail').checked;
-
-        document.getElementById('saveBtn').click();
-    };
-
-    // Auto-save
-    setInterval(() => document.getElementById('content').value = quill.root.innerHTML, 5000);
+    document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('contentInput').value = quill.root.innerHTML;
+    });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

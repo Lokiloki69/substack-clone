@@ -1,10 +1,278 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substack - The Home for Creators</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        :root {
+            --primary-color: #FF6D00;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --border-color: #E0E0E0;
+            --bg-light: #F5F5F5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #FFFFFF;
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .post-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.2s;
+        }
+
+        .post-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: var(--text-dark);
+        }
+
+        .post-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .post-meta {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 12px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary-custom:hover {
+            background: #E65100;
+            color: white;
+        }
+
+        .publication-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .publication-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .publication-info h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .publication-info p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .trending-section {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .trending-section h5 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Substack</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/explore">Explore</a>
+                </li>
+                <li class="nav-item">
+                    <input type="search" class="form-control form-control-sm" placeholder="Search">
+                </li>
+                <li class="nav-item" th:if="${currentUser == null}">
+                    <a class="nav-link" href="/auth/login">Login</a>
+                </li>
+                <li class="nav-item" th:if="${currentUser == null}">
+                    <a class="btn btn-primary-custom" href="/auth/register">Sign Up</a>
+                </li>
+                <li class="nav-item dropdown" th:if="${currentUser != null}">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <span th:text="${currentUser.name}"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" th:href="@{/user/{id}(id=${currentUser.id})}">Profile</a></li>
+                        <li><a class="dropdown-item" href="/subscriptions/manage">My Subscriptions</a></li>
+                        <li><a class="dropdown-item" href="/publications/new">New Publication</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
+<div class="main-content">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <a href="/" class="sidebar-item">
+            <span>📖</span> <span>Home</span>
+        </a>
+        <a href="/explore" class="sidebar-item">
+            <span>🔍</span> <span>Explore</span>
+        </a>
+        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">
+            <span>✏️</span> <span>Write</span>
+        </a>
+        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">
+            <span>📬</span> <span>Inbox</span>
+        </a>
+        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">
+            <span>📰</span> <span>New Publication</span>
+        </a>
+    </div>
+
+    <!-- CENTER CONTENT -->
+    <div>
+        <!-- Trending Posts -->
+        <div th:if="${!posts.isEmpty()}">
+            <h4 style="margin-bottom: 20px; font-weight: 700;">Trending Now</h4>
+            <div th:each="post : ${posts.subList(0, Math.min(posts.size(), 5))}">
+                <div class="post-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div style="flex: 1;">
+                            <h3 class="post-title" th:text="${post.title}"></h3>
+                            <p class="post-subtitle" th:text="${post.subTitle}"></p>
+                            <div class="post-meta">
+                                <span th:text="${post.author.name}"></span>
+                                <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>
+                            </div>
+                        </div>
+                        <a th:href="@{/posts/{id}(id=${post.id})}" class="btn btn-primary-custom">Read</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${posts.isEmpty()}" style="text-align: center; padding: 40px;">
+            <h5>No posts yet</h5>
+            <p class="text-muted">Be the first to create a post</p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR - RECOMMENDATIONS -->
+    <div class="trending-section">
+        <h5>Recommended Publications</h5>
+        <div th:if="${publications != null}">
+            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">
+                <div class="publication-item">
+                    <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
+                    <div class="publication-info" style="flex: 1;">
+                        <h6 th:text="${pub.name}"></h6>
+                        <p th:text="${pub.owner.name}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

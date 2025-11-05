@@ -12,21 +12,23 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "likes")
-public class Like {
+@Table(name = "restacks")
+public class Restack {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_post_id", nullable = false)
+    private Post originalPost;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @Column(columnDefinition = "TEXT")
+    private String personalNote; // Optional note when restacking
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 }

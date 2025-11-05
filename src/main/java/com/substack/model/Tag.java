@@ -2,6 +2,9 @@ package com.substack.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -12,13 +15,13 @@ import java.util.List;
 @Builder
 @Table(name = "tags")
 public class Tag {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
-    private List<Post> posts;
+    @CreationTimestamp
+    private Instant createdAt;
 }
