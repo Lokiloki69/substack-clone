@@ -20,7 +20,6 @@ public class MediaFile {
 
     private String fileUrl;
 
-    // Possible values: "image/png", "video/mp4", "image/gif" etc.
     private String fileType;
 
     @ManyToOne(fetch = FetchType.LAZY)

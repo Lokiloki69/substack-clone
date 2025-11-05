@@ -1,19 +1,19 @@
 // src/main/java/com/substack/service/PostService.java
 package com.substack.service;
 
+import com.substack.model.MediaFile;
 import com.substack.model.Post;
 import com.substack.model.Tag;
+import com.substack.model.User;
+import com.substack.repository.MediaFileRepository;
 import com.substack.repository.PostRepository;
 import com.substack.repository.TagRepository;
+import com.substack.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,19 +21,17 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepo;
-    private final TagRepository tagRepo;
+    private final MediaFileRepository mediaFileRepository;
 
-    public Post savePost(Post post, String tagsCsv) {
-        // Parse tags
-        if (tagsCsv != null && !tagsCsv.isBlank()) {
-            List<Tag> tags = Arrays.stream(tagsCsv.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .map(name -> tagRepo.findByName(name).orElseGet(() -> tagRepo.save(Tag.builder().name(name).build())))
-                    .collect(Collectors.toList());
-            post.setTags(tags);
-        }
+    public Post savePost(Post post) {
 
+        List<MediaFile> mediaFiles = new ArrayList<>();
+        post.getFiles().forEach(mediaFile -> {
+            MediaFile manage = mediaFileRepository.findById(mediaFile.getId()).get();
+            manage.setPost(post);
+            mediaFiles.add(manage);
+        });
+        post.setFiles(mediaFiles);
         return postRepo.save(post);
     }
 

@@ -55,10 +55,11 @@ public class PostController {
             post.setScheduledAt(null);
         }
 
-        postService.savePost(post, tags);
+        postService.savePost(post);
 
-        ra.addFlashAttribute("success", "Post saved!");
-        return "redirect:/posts/" + post.getId();
+//        ra.addFlashAttribute("success", "Post saved!");
+//        return "redirect:/posts/" + post.getId();
+        return "post/create";
     }
 
     @GetMapping("/{id}")

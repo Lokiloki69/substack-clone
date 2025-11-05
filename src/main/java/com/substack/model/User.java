@@ -27,15 +27,15 @@ public class User {
     private String email;
 
     @Column(nullable = false, unique = true, updatable = false)
-    private String username;  // for public URL slug (e.g., substack.com/@nivedita)
-    private String bio;       // short user bio
+    private String username;
+    private String bio;
 
     // 🔹 Auth info
     private String password;
 
     // 🔹 Profile details
-    private String profileImageUrl; // Cloudinary URL
-    private String bannerImageUrl;  // optional cover photo
+    private String profileImageUrl;
+    private String bannerImageUrl;
 
     // 🔹 Social or contact links (optional)
     private String twitterHandle;
