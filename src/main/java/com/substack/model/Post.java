@@ -1,5 +1,6 @@
 package com.substack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,6 +52,7 @@ public class Post {
     )
     private List<User> coAuthor;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MediaFile> files;
 

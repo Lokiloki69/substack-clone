@@ -161,6 +161,14 @@
             margin-bottom: 15px;
         }
 
+        /* Ensure images inside post content are responsive */
+        .post-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
         @media (max-width: 1200px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -211,19 +219,19 @@
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
         <a href="/" class="sidebar-item">
-            <span>📖</span> <span>Home</span>
+            <span>Home</span>
         </a>
         <a href="/explore" class="sidebar-item">
-            <span>🔍</span> <span>Explore</span>
+            <span>Explore</span>
         </a>
         <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">
-            <span>✏️</span> <span>Write</span>
+            <span>Write</span>
         </a>
         <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">
-            <span>📬</span> <span>Inbox</span>
+            <span>Inbox</span>
         </a>
         <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">
-            <span>📰</span> <span>New Publication</span>
+            <span>New Publication</span>
         </a>
     </div>
 
@@ -235,24 +243,29 @@
 
             <div th:each="post : ${posts}">
                 <div class="post-card">
-                    <div th:if="${post.files != null and !post.files.isEmpty()}">
-                        <img th:src="${post.files.get(0).url}"
-                             alt="Post Image"
-                             style="width: 100%; height: auto; border-radius: 10px; margin-bottom: 15px;">
-                    </div>
                     <div class="d-flex justify-content-between align-items-start">
                         <div style="flex: 1;">
+
+                            <!-- Show preview image ONLY if it's NOT already in post.content -->
+                            <div th:if="${post.files != null and !post.files.isEmpty()
+                                        and (post.content == null or !#strings.contains(post.content, post.files[0].fileUrl))}"
+                                 style="float: left; margin-right: 15px; margin-bottom: 10px;">
+                                <img th:src="${post.files[0].fileUrl + '?w=200&h=200&fit=crop'}"
+                                     alt="Post Preview"
+                                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
+                            </div>
+
                             <h3 class="post-title" th:text="${post.title}"></h3>
                             <p class="post-subtitle" th:text="${post.subTitle}"></p>
 
-                            <!-- ✅ Display HTML content (if available) -->
-                            <div th:if="${post.content != null}" th:utext="${post.content}"></div>
+                            <!-- Render full HTML content (images already inside) -->
+                            <div th:if="${post.content != null}"
+                                 th:utext="${post.content}"
+                                 style="clear: both; margin-top: 10px;"></div>
 
                             <div class="post-meta" style="margin-top: 10px;">
-<!--                                <span th:text="${post.author.name}"></span>-->
                                 <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>
 
-                                <!-- ✅ Likes & Comments Count -->
                                 <div style="margin-top: 5px;">
                                     <span th:text="${#lists.size(post.likes)} + ' Likes'"></span>
                                     <span> | </span>
@@ -273,23 +286,21 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDEBAR - RECOMMENDATIONS -->
-<!--    <div class="trending-section">-->
-<!--        <h5>Recommended Publications</h5>-->
-<!--&lt;!&ndash;        <div th:if="${publications != null}">&ndash;&gt;-->
-<!--&lt;!&ndash;            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">&ndash;&gt;-->
-<!--            <div th:if="${posts != null and !posts.isEmpty()}">-->
-<!--                <div th:each="post : ${#lists.slice(posts, 0, posts.size() > 5 ? 5 : posts.size())}">-->
-<!--            <div class="publication-item">-->
-<!--                    <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>-->
-<!--                    <div class="publication-info" style="flex: 1;">-->
-<!--                        <h6 th:text="${pub.name}"></h6>-->
-<!--                        <p th:text="${pub.owner.name}"></p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- RIGHT SIDEBAR - RECOMMENDED PUBLICATIONS (Uncomment & populate later) -->
+    <!--
+    <div class="trending-section">
+        <h5>Recommended Publications</h5>
+        <div th:each="pub : ${recommendedPublications}">
+            <div class="publication-item">
+                <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
+                <div class="publication-info" style="flex: 1;">
+                    <h6 th:text="${pub.name}"></h6>
+                    <p th:text="${pub.owner.name}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
