@@ -22,59 +22,41 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
         this.customLogoutSuccessHandler = customLogoutSuccessHandler;
     }
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**")  // disable CSRF for API routes
-                )
-                // Authorization - NO authorization required for now
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/**"
-//                                "/register",
-//                                "/login",
-//                                "/css/**",
-//                                "/js/**",
-//                                "/images/**",
-//                                "/posts/**",
-//                                "/communities/**",
-//                                "/user/**",
-//                                "/comments/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+    http
+            // ✅ Disable CSRF only for API routes
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/auth/**"))
 
-                .formLogin(form -> form
-                        .loginPage("/login")                 // custom login page
-                        .loginProcessingUrl("/login")        // URL to submit login form
-                        .defaultSuccessUrl("/", true)        // redirect on successful login
-                        .failureUrl("/login?error=true")     // redirect on login failure
-                        .usernameParameter("email")          // map email input to username
-                        .passwordParameter("password")       // map password input
-                        .permitAll()
-                )
+            // ✅ Authorization: permit all public pages
+            .authorizeHttpRequests(auth -> auth
+                    .anyRequest().permitAll()
+            )
+
+            // ✅ Custom login form setup
+            .formLogin(form -> form.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
 
 
-                // Logout configuration
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .logoutSuccessHandler(customLogoutSuccessHandler)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
-                )
+            // ✅ Logout setup
+            .logout(logout -> logout
+                    .logoutUrl("/auth/logout")               // POST request for logout
+                    .logoutSuccessUrl("/auth/login?logout")  // redirect after logout
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
+                    .logoutSuccessHandler(customLogoutSuccessHandler)
+                    .permitAll()
+            )
 
-                // Session management
-                .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false)
-                );
+            // ✅ Session management setup
+            .sessionManagement(session -> session
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(false)
+            );
 
-        return http.build();
-    }
+    return http.build();
+}
 
     @Bean
     public PasswordEncoder passwordEncoder() {

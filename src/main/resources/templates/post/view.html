@@ -1,47 +1,223 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${post.title}">Post Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${post.title + ' - Substack'}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container {
-            max-width: 700px;
-            margin: 50px auto;
-            font-family: 'Georgia', serif;
+        :root {
+            --primary-color: #FF6D00;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --border-color: #E0E0E0;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .post-header {
+            max-width: 800px;
+            margin: 60px auto 40px;
+            text-align: center;
+        }
+
         .post-title {
-            font-size: 42px;
-            font-weight: bold;
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
             margin-bottom: 20px;
+            color: var(--text-dark);
         }
-        .post-meta {
-            color: #666;
+
+        .post-subtitle {
+            font-size: 20px;
+            color: var(--text-light);
             margin-bottom: 30px;
         }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
         .post-content {
+            max-width: 800px;
+            margin: 40px auto;
             font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .post-content h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 40px 0 20px;
+        }
+
+        .post-actions {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .comments-section {
+            max-width: 800px;
+            margin: 60px auto;
+        }
+
+        .comment-form {
+            background: #F5F5F5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .comment {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .comment-content {
+            margin-top: 10px;
             line-height: 1.6;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1 class="post-title" th:text="${post.title}">Post Title</h1>
+<!-- Navbar -->
+<nav class="navbar navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-size: 24px; color: var(--primary-color); font-weight: 700;">Substack</a>
+        <div>
+            <a href="/" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </div>
+</nav>
+
+<div class="post-header">
+    <h1 class="post-title" th:text="${post.title}"></h1>
+    <p class="post-subtitle" th:text="${post.subTitle}"></p>
 
     <div class="post-meta">
-        <span>By <span th:text="${post.author.name}">Author</span></span> ·
-        <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Date</span>
-    </div>
-
-    <!-- Use th:utext to render HTML without escaping -->
-    <div class="post-content" th:utext="${post.content}">
-        Post content will appear here
-    </div>
-
-    <div style="margin-top: 40px;">
-        <a th:href="@{/posts/edit/{id}(id=${post.id})}">Edit</a> |
-        <a th:href="@{/posts}">Back to Posts</a>
+        <div class="post-author">
+            <div class="author-avatar" th:text="${post.author.name.charAt(0)}"></div>
+            <div>
+                <div th:text="${post.author.name}"></div>
+                <small th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></small>
+            </div>
+        </div>
     </div>
 </div>
+
+<div class="post-content" th:utext="${post.content}"></div>
+
+<div class="post-actions">
+    <form th:if="${!liked}" method="post" th:action="@{/posts/{id}/like(id=${post.id})}" style="display: inline;">
+        <button type="submit" class="action-btn">❤️ Like (<span th:text="${likeCount}"></span>)</button>
+    </form>
+    <form th:if="${liked}" method="post" th:action="@{/posts/{id}/unlike(id=${post.id})}" style="display: inline;">
+        <button type="submit" class="action-btn" style="color: var(--primary-color);">❤️ Liked</button>
+    </form>
+</div>
+
+<div class="comments-section">
+    <h3 style="margin-bottom: 30px;">Comments</h3>
+
+    <div class="comment-form">
+        <h5>Add your comment</h5>
+        <form method="post" th:action="@{/api/comments/{postId}(postId=${post.id})}">
+            <div class="mb-3">
+                <input type="text" name="name" class="form-control" placeholder="Your name" required>
+            </div>
+            <div class="mb-3">
+                <input type="email" name="email" class="form-control" placeholder="Your email" required>
+            </div>
+            <div class="mb-3">
+                <textarea name="comment" class="form-control" rows="4" placeholder="Your comment..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="background: var(--primary-color); border: none;">Post Comment</button>
+        </form>
+    </div>
+
+    <div th:if="${!comments.isEmpty()}">
+        <h5 style="margin-bottom: 20px;" th:text="${comments.size()} + ' Comment(s)'"></h5>
+        <div th:each="comment : ${comments}">
+            <div class="comment">
+                <div class="comment-author" th:text="${comment.name}"></div>
+                <div class="comment-date" th:text="${#temporals.format(comment.createdAt, 'MMM d, yyyy')}"></div>
+                <div class="comment-content" th:text="${comment.comment}"></div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${comments.isEmpty()}" style="text-align: center; padding: 40px;">
+        <p class="text-muted">No comments yet. Be the first to comment!</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

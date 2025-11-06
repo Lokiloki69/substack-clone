@@ -13,19 +13,20 @@ import java.time.Instant;
 @Builder
 @Table(name = "activities")
 public class Activity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String actionType; // e.g., "LIKED_POST", "SUBSCRIBED_USER", "CREATED_POST"
+    private String type; // PUBLISHED_POST, COMMENTED, LIKED, SUBSCRIBED, etc.
 
-    private String description; // Optional human-readable text
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 }

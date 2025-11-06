@@ -1,6 +1,7 @@
 package com.substack.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @Getter
 @Setter
+@Builder
 public class Comment {
 
     @Id

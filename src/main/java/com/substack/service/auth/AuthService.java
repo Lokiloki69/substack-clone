@@ -26,7 +26,7 @@ public class AuthService {
             String username = auth.getName();
             log.info("User logged in: {}", username); // INFO level log
 
-            return userRepository.findByUsername(username)
+            return userRepository.findByEmailIgnoreCase(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         }
 

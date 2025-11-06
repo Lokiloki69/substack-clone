@@ -62,19 +62,31 @@ public class PostController {
         return "post/create";
     }
 
-    @GetMapping("/{id}")
-    public String viewPost(@PathVariable Long id, Model model) {
+    @PostMapping("/{id}/like")
+    public String likePost(@PathVariable Long id, HttpSession session, RedirectAttributes ra) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/auth/login";
+        }
+
         Post post = postService.findById(id);
-        if (post == null) return "redirect:/";
-        model.addAttribute("post", post);
-        return "post/view";
+        User user = userService.findById(userId);
+
+        if (post != null && user != null) {
+            likeService.likePost(user, post);
+        }
+
+        return "redirect:/posts/" + id;
     }
 
-    @GetMapping("/edit/{id}")
-    public String editPost(@PathVariable Long id, Model model) {
-        Post post = postService.findById(id);
-        if (post == null) return "redirect:/";
-        model.addAttribute("post", post);
-        return "editor";
+    @PostMapping("/{id}/unlike")
+    public String unlikePost(@PathVariable Long id, HttpSession session, RedirectAttributes ra) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/auth/login";
+        }
+
+        likeService.unlikePost(userId, id);
+        return "redirect:/posts/" + id;
     }
 }

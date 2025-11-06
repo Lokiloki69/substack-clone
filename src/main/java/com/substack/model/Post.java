@@ -54,6 +54,10 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MediaFile> files;
 
+    @ManyToOne
+    @JoinColumn(name = "publication_id")
+    private Publication publication;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
