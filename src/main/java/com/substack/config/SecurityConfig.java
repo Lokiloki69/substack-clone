@@ -27,7 +27,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http
             // ✅ Disable CSRF only for API routes
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/auth/**"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/**"))
 
             // ✅ Authorization: permit all public pages
             .authorizeHttpRequests(auth -> auth

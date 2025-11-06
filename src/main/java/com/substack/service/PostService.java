@@ -30,13 +30,15 @@ public class PostService {
 
     public Post savePost(Post post) {
 
-        List<MediaFile> mediaFiles = new ArrayList<>();
-        post.getFiles().forEach(mediaFile -> {
-            MediaFile manage = mediaFileRepository.findById(mediaFile.getId()).get();
-            manage.setPost(post);
-            mediaFiles.add(manage);
-        });
-        post.setFiles(mediaFiles);
+        if(post.getFiles() != null) {
+            List<MediaFile> mediaFiles = new ArrayList<>();
+            post.getFiles().forEach(mediaFile -> {
+                MediaFile manage = mediaFileRepository.findById(mediaFile.getId()).get();
+                manage.setPost(post);
+                mediaFiles.add(manage);
+            });
+            post.setFiles(mediaFiles);
+        }
         return postRepo.save(post);
     }
 
