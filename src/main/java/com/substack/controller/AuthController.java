@@ -1,6 +1,8 @@
 package com.substack.controller;
 
+import com.substack.dto.SignupDTO;
 import com.substack.model.User;
+import com.substack.repository.InterestRepository;
 import com.substack.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashSet;
+
 @Slf4j
 @Controller
 @RequestMapping("/auth")
@@ -23,6 +27,7 @@ public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final InterestRepository interestRepository;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -67,40 +72,41 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        model.addAttribute("interests", interestRepository.findAllByOrderByNameAsc());
+        model.addAttribute("signupForm", new SignupDTO());
         return "user/signup";
     }
 
+    // === POST: Handle registration ===
     @PostMapping("/register")
     public String register(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String username,
-            @RequestParam String password,
+            @ModelAttribute("signupForm") SignupDTO form,
             @RequestParam String confirmPassword,
             RedirectAttributes ra) {
 
-        if (!password.equals(confirmPassword)) {
+        // 1. Password match
+        if (!form.getPassword().equals(confirmPassword)) {
             ra.addFlashAttribute("error", "Passwords do not match");
             return "redirect:/auth/register";
         }
 
-        if (userService.userExists(email)) {
+        // 2. Email already exists
+        if (userService.userExists(form.getEmail())) {
             ra.addFlashAttribute("error", "Email already registered");
             return "redirect:/auth/register";
         }
 
-        User user = User.builder()
-                .name(name)
-                .email(email)
-                .username(username)
-                .password(passwordEncoder.encode(password))
-                .build();
-
-        userService.saveUser(user);
-        ra.addFlashAttribute("success", "Registration successful! Please login.");
-
-        return "redirect:/auth/login";
+        // 3. Save user + interests
+        try {
+            userService.saveUserWithInterests(form);
+            ra.addFlashAttribute("success", "Registration successful! Please login.");
+            return "redirect:/auth/login";
+        } catch (Exception e) {
+            log.error("Registration failed", e);
+            ra.addFlashAttribute("error", "Something went wrong. Try again.");
+            return "redirect:/auth/register";
+        }
     }
 
     @GetMapping("/logout")
