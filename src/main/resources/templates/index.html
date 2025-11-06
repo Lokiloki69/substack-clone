@@ -232,15 +232,32 @@
         <!-- Trending Posts -->
         <div th:if="${!posts.isEmpty()}">
             <h4 style="margin-bottom: 20px; font-weight: 700;">Trending Now</h4>
-            <div th:each="post : ${posts.subList(0, Math.min(posts.size(), 5))}">
+
+            <div th:each="post : ${posts}">
                 <div class="post-card">
+                    <div th:if="${post.files != null and !post.files.isEmpty()}">
+                        <img th:src="${post.files.get(0).url}"
+                             alt="Post Image"
+                             style="width: 100%; height: auto; border-radius: 10px; margin-bottom: 15px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-start">
                         <div style="flex: 1;">
                             <h3 class="post-title" th:text="${post.title}"></h3>
                             <p class="post-subtitle" th:text="${post.subTitle}"></p>
-                            <div class="post-meta">
-                                <span th:text="${post.author.name}"></span>
+
+                            <!-- ✅ Display HTML content (if available) -->
+                            <div th:if="${post.content != null}" th:utext="${post.content}"></div>
+
+                            <div class="post-meta" style="margin-top: 10px;">
+<!--                                <span th:text="${post.author.name}"></span>-->
                                 <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>
+
+                                <!-- ✅ Likes & Comments Count -->
+                                <div style="margin-top: 5px;">
+                                    <span th:text="${#lists.size(post.likes)} + ' Likes'"></span>
+                                    <span> | </span>
+                                    <span th:text="${#lists.size(post.commentsList)} + ' Comments'"></span>
+                                </div>
                             </div>
                         </div>
                         <a th:href="@{/posts/{id}(id=${post.id})}" class="btn btn-primary-custom">Read</a>
@@ -257,22 +274,22 @@
     </div>
 
     <!-- RIGHT SIDEBAR - RECOMMENDATIONS -->
-    <div class="trending-section">
-        <h5>Recommended Publications</h5>
-<!--        <div th:if="${publications != null}">-->
-<!--            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">-->
-            <div th:if="${posts != null and !posts.isEmpty()}">
-                <div th:each="post : ${#lists.slice(posts, 0, posts.size() > 5 ? 5 : posts.size())}">
-            <div class="publication-item">
-                    <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
-                    <div class="publication-info" style="flex: 1;">
-                        <h6 th:text="${pub.name}"></h6>
-                        <p th:text="${pub.owner.name}"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    <div class="trending-section">-->
+<!--        <h5>Recommended Publications</h5>-->
+<!--&lt;!&ndash;        <div th:if="${publications != null}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">&ndash;&gt;-->
+<!--            <div th:if="${posts != null and !posts.isEmpty()}">-->
+<!--                <div th:each="post : ${#lists.slice(posts, 0, posts.size() > 5 ? 5 : posts.size())}">-->
+<!--            <div class="publication-item">-->
+<!--                    <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>-->
+<!--                    <div class="publication-info" style="flex: 1;">-->
+<!--                        <h6 th:text="${pub.name}"></h6>-->
+<!--                        <p th:text="${pub.owner.name}"></p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -66,6 +66,12 @@ public class Post {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comment> commentsList;
+
+    @OneToMany(mappedBy = "post")
+    private List<Like> likes;
+
     private String audience = "everyone";
     private String comments = "everyone";
     private LocalDateTime scheduledAt;
