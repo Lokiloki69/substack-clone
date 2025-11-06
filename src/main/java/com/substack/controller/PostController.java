@@ -6,6 +6,7 @@ import com.substack.model.User;
 import com.substack.service.LikeService;
 import com.substack.service.PostService;
 import com.substack.service.UserService;
+import com.substack.service.auth.AuthService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ public class PostController {
     private final PostService postService;
     private  final LikeService likeService;
     private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/new")
     public String newPost(Model model) {
@@ -35,6 +37,7 @@ public class PostController {
                 .audience("everyone")
                 .comments("everyone")
                 .sendEmail(true)
+                .author(authService.getCurrentUser())
                 .build();
         model.addAttribute("post", post);
         return "post/create";
