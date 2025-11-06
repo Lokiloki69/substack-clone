@@ -1,10 +1,535 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>New Post | Substack Clone</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <style>
+        :root { --orange:#ff5a00; --gray:#666; }
+        body {font-family:-apple-system,sans-serif;margin:0;background:#fafafa;}
+        .container {max-width:720px;margin:auto;padding:2rem 1rem;}
+        .toolbar {position:sticky;top:0;background:white;z-index:10;border-bottom:1px solid #eee;padding:1rem 0;display:flex;justify-content:space-between;align-items:center;}
+        .btn {padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer;}
+        .btn-continue {background:var(--orange);color:white;}
+        .title {font-size:3rem;font-weight:700;border:none;outline:none;width:100%;margin:2rem 0 .5rem;}
+        .subtitle {font-size:1.5rem;color:var(--gray);border:none;outline:none;width:100%;margin-bottom:1rem;}
+        #editor {min-height:60vh;}
+        .ql-editor {padding:0 !important;}
+
+        /* --- CO-AUTHOR PICKER (MULTI) --- */
+        .author-picker { position: relative; margin: 2rem 0; }
+        .author-input-wrapper {
+            display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
+            overflow-x: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px;
+            white-space: nowrap;
+        }
+        #selectedAuthors { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+        .author-tag {
+            background: #e6f7ff; padding: 6px 12px; border-radius: 999px; font-size: .9rem;
+            display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+        }
+        .author-tag img { width: 20px; height: 20px; border-radius: 50%; }
+        .author-tag-close { cursor: pointer; font-weight: bold; }
+        .author-search { border: none; outline: none; flex: 1; min-width: 120px; font-size: 1rem; }
+
+        .author-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px;
+            background: white; border: 1px solid #ddd; border-radius: 8px; max-height: 200px;
+            overflow-y: auto; z-index: 20; display: none; box-shadow: 0 4px 12px rgba(0,0,0,.1);
+        }
+        .author-suggestion {
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer;
+            transition: background .2s;
+        }
+        .author-suggestion:hover { background: #f0f0f0; }
+        .author-suggestion img { width: 28px; height: 28px; border-radius: 50%; }
+
+        /* --- TAG INPUT --- */
+        .tag-input {
+            display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; overflow-x: auto;
+            border: 1px solid #ddd; border-radius: 8px; padding: 10px; white-space: nowrap;
+        }
+        #selectedTags { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
+        .tag { background: #f0f0f0; padding: 6px 12px; border-radius: 999px; font-size: .9rem;
+               display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .tag-close { cursor: pointer; font-weight: bold; }
+        .tag-field { border: none; outline: none; flex: 1; min-width: 120px; font-size: 1rem; }
+
+        .tag-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px;
+            background: white; border: 1px solid #ddd; border-radius: 8px; max-height: 90px;
+            overflow-x: auto; overflow-y: hidden; z-index: 20; display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,.1); flex-wrap: nowrap; gap: 8px; padding: 8px;
+        }
+        .tag-suggestion, .tag-create {
+            padding: 6px 12px; border-radius: 999px; background: #f7f7f7; cursor: pointer;
+            white-space: nowrap; flex-shrink: 0; transition: background .2s, color .2s;
+        }
+        .tag-suggestion:hover, .tag-create:hover { background: var(--orange); color: white; }
+
+        .checkbox {display:flex;align-items:center;gap:12px;margin:1.2rem 0;}
+        .checkbox input {width:18px;height:18px;}
+        .datetime {margin-top:.8rem;display:none;}
+        .datetime input {width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:1rem;background:white;cursor:pointer;}
+        .modal {display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
+        .modal.active {display:flex;}
+        .modal-content {background:white;border-radius:12px;width:90%;max-width:520px;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+        .modal-header {padding:1.5rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+        .modal-header h2 {margin:0;font-size:1.4rem;}
+        .close {font-size:2rem;cursor:pointer;color:#aaa;}
+        .modal-body {padding:1.5rem;}
+        .modal-footer {padding:1rem 1.5rem;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:12px;}
+        .btn-cancel {background:#f5f5f5;color:#333;padding:10px 20px;border-radius:999px;cursor:pointer;}
+        .btn-publish {background:var(--orange);color:white;padding:10px 24px;border-radius:999px;font-weight:600;cursor:pointer;}
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="toolbar">
+        <button class="btn" onclick="history.back()">Back to Draft</button>
+        <div>
+            <button class="btn" onclick="preview()">Preview</button>
+            <button class="btn btn-continue" onclick="openModal()">Continue</button>
+        </div>
+    </div>
 
+    <div id="toolbar">
+        <select class="ql-header">
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option selected>Normal</option>
+        </select>
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-link"></button>
+        <button class="ql-image"></button>
+        <button class="ql-video"></button>
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+    </div>
+
+    <form id="postForm" th:action="@{/posts/save}" th:object="${post}" method="post" enctype="multipart/form-data">
+        <input type="text" th:field="*{title}" class="title" placeholder="Title" required />
+        <input type="text" th:field="*{subTitle}" class="subtitle" placeholder="Add a subtitle..." />
+
+        <!-- MULTI CO-AUTHOR PICKER -->
+        <div class="author-picker">
+            <div class="author-input-wrapper">
+                <div id="selectedAuthors"></div>
+                <input type="text" id="authorSearch" class="author-search" placeholder="Search co-authors..." autocomplete="off">
+            </div>
+            <div id="authorSuggestions" class="author-suggestions"></div>
+        </div>
+
+        <!-- DYNAMIC HIDDEN FIELDS FOR coAuthor -->
+        <div id="coAuthorFields"></div>
+
+        <div id="editor"><p>Start writing...</p></div>
+        <textarea th:field="*{content}" id="content" style="display:none;"></textarea>
+
+        <!-- Hidden fields for uploaded media -->
+        <div id="mediaFields"></div>
+
+        <!-- OTHER HIDDEN FIELDS -->
+        <input type="hidden" name="audience" id="audience" value="everyone">
+        <input type="hidden" name="comments" id="comments" value="everyone">
+        <input type="hidden" name="tags" id="tags" value="">
+        <input type="hidden" name="scheduledAt" id="scheduledAt">
+        <input type="hidden" name="sendEmail" id="sendEmail" value="true">
+        <input type="hidden" th:field="*{isPublished}" value="true">
+        <button type="submit" id="saveBtn" style="display:none;">Save</button>
+    </form>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal" id="publishModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Publish</h2>
+            <span class="close" onclick="closeModal()">×</span>
+        </div>
+        <div class="modal-body">
+            <div class="section">
+                <h3>Audience</h3>
+                <div class="radio-group">
+                    <label class="radio"><input type="radio" name="modal-audience" value="everyone" checked><span class="radio-label">Everyone</span></label>
+                    <label class="radio"><input type="radio" name="modal-audience" value="paid"><span class="radio-label">Paid subscribers only</span></label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Allow comments from...</h3>
+                <div class="radio-group">
+                    <label class="radio"><input type="radio" name="modal-comments" value="everyone" checked><span class="radio-label">Everyone</span></label>
+                    <label class="radio"><input type="radio" name="modal-comments" value="none"><span class="radio-label">No one</span></label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Add tags</h3>
+                <div style="position: relative;">
+                    <div class="tag-input">
+                        <div id="selectedTags"></div>
+                        <input type="text" class="tag-field" id="tagSearch" placeholder="Search or create tag" autocomplete="off">
+                    </div>
+                    <div id="tagSuggestions" class="tag-suggestions"></div>
+                </div>
+            </div>
+
+            <div class="checkbox">
+                <input type="checkbox" id="modalSendEmail" checked>
+                <label for="modalSendEmail">Send via email</label>
+            </div>
+
+            <div class="checkbox">
+                <input type="checkbox" id="scheduleToggle">
+                <label for="scheduleToggle">Schedule time to publish</label>
+            </div>
+            <div class="datetime" id="datetimePicker">
+                <input type="text" id="datetime" readonly placeholder="Click to select date & time">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-publish" id="publishBtn">Publish now</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const quill = new Quill('#editor', { modules: { toolbar: '#toolbar' }, theme: 'snow' });
+        const modal = document.getElementById('publishModal');
+        const coAuthorFields = document.getElementById('coAuthorFields');
+        const mediaFields = document.getElementById('mediaFields');
+
+        // TAG ELEMENTS
+        const tagSearch = document.getElementById('tagSearch');
+        const tagSuggestions = document.getElementById('tagSuggestions');
+        const selectedTagsDiv = document.getElementById('selectedTags');
+
+        // AUTHOR ELEMENTS
+        const authorSearch = document.getElementById('authorSearch');
+        const authorSuggestions = document.getElementById('authorSuggestions');
+        const selectedAuthorsDiv = document.getElementById('selectedAuthors');
+
+        // State
+        let selectedCoAuthors = [];
+        let selectedTagIds = [];
+        const idToTag = new Map();
+        let picker = null;
+
+        /* === CLOUDINARY UPLOAD HANDLER === */
+        // Use toolbar handlers for image and video
+        quill.getModule('toolbar').addHandler('image', () => handleMediaUpload('image'));
+        quill.getModule('toolbar').addHandler('video', () => handleMediaUpload('video'));
+
+        async function handleMediaUpload(type) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = type === 'image' ? 'image/*' : 'video/*';
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
+                    if (!res.ok) throw new Error('Upload failed');
+                    const data = await res.json();
+                    const range = quill.getSelection(true) || { index: 0 };
+                    if (type === 'image') quill.insertEmbed(range.index, 'image', data.url);
+                    else quill.insertEmbed(range.index, 'video', data.url);
+                    addMediaFileToForm(data.id, file.name, file.type, data.url);
+                } catch (e) {
+                    console.error('Upload failed:', e);
+                    alert('Upload failed');
+                }
+            };
+        }
+
+        function addMediaFileToForm(id, name, type, url) {
+            // Each media entry uses 4 hidden inputs; determine index accordingly
+            const index = Math.floor(mediaFields.children.length / 4);
+            const createHidden = (n, v) => {
+                const i = document.createElement('input');
+                i.type = 'hidden'; i.name = `files[${index}].${n}`; i.value = v;
+                mediaFields.appendChild(i);
+            };
+            createHidden('id', id || '');
+            createHidden('fileName', name || '');
+            createHidden('fileType', type || '');
+            createHidden('fileUrl', url || '');
+        }
+
+        /* === TAG HANDLING === */
+        function addTag(id, name) {
+            if (selectedTagIds.includes(id)) return;
+            selectedTagIds.push(id);
+            idToTag.set(id, name);
+
+            const span = document.createElement('span');
+            span.className = 'tag';
+            span.innerHTML = `${name} <span class="tag-close" onclick="removeTag(${id})">×</span>`;
+            selectedTagsDiv.appendChild(span);
+            updateTags();
+        }
+
+        window.removeTag = function(id) {
+            selectedTagIds = selectedTagIds.filter(x => x !== id);
+            idToTag.delete(id);
+            updateTags();
+            // remove element from DOM (closest span)
+            const el = Array.from(selectedTagsDiv.children).find(s => s.textContent.trim().startsWith(idToTag.get(id) || ''));
+            // simpler: remove last matching element by onclick caller:
+            // event.target.parentElement.remove();
+            // but event may not be available when called programmatically; safe approach:
+            // remove elements by re-render:
+            renderSelectedTags();
+        };
+
+        function renderSelectedTags() {
+            selectedTagsDiv.innerHTML = '';
+            selectedTagIds.forEach(id => {
+                const name = idToTag.get(id);
+                if (!name) return;
+                const span = document.createElement('span');
+                span.className = 'tag';
+                span.innerHTML = `${name} <span class="tag-close" onclick="removeTag(${id})">×</span>`;
+                selectedTagsDiv.appendChild(span);
+            });
+            updateTags();
+        }
+
+        function updateTags() {
+            document.getElementById('tags').value = selectedTagIds.join(',');
+        }
+
+        tagSearch.addEventListener('input', async () => {
+            const q = tagSearch.value.trim();
+            tagSuggestions.innerHTML = '';
+            if (!q) { tagSuggestions.style.display = 'none'; return; }
+
+            try {
+                const res = await fetch(`/api/tags/search?q=${encodeURIComponent(q)}`);
+                if (!res.ok) throw new Error('Tag search failed');
+                const tags = await res.json();
+                if (tags.length) {
+                    tags.forEach(t => {
+                        const div = document.createElement('div');
+                        div.className = 'tag-suggestion';
+                        div.textContent = t.name;
+                        div.onclick = () => { addTag(t.id, t.name); tagSearch.value=''; hideSuggestions(); };
+                        tagSuggestions.appendChild(div);
+                    });
+                } else {
+                    createNewTagOption(q);
+                }
+            } catch (e) {
+                // fallback dummy tags
+                const dummy = [{id:1,name:'tech'},{id:2,name:'news'},{id:3,name:'writing'},{id:4,name:'ai'},{id:5,name:'java'}];
+                const filtered = dummy.filter(t => t.name.toLowerCase().includes(q.toLowerCase()));
+                filtered.forEach(t => {
+                    const div = document.createElement('div');
+                    div.className = 'tag-suggestion';
+                    div.textContent = t.name;
+                    div.onclick = () => { addTag(t.id, t.name); tagSearch.value=''; hideSuggestions(); };
+                    tagSuggestions.appendChild(div);
+                });
+                if (!filtered.length) createNewTagOption(q);
+            }
+            tagSuggestions.style.display = 'flex';
+        });
+
+        function createNewTagOption(name) {
+            const div = document.createElement('div');
+            div.className = 'tag-create';
+            div.textContent = `+ Create "${name}"`;
+            div.onclick = async () => {
+                try {
+                    const resp = await fetch('/api/tags', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name}) });
+                    if (!resp.ok) throw new Error('Create tag failed');
+                    const newTag = await resp.json();
+                    addTag(newTag.id, newTag.name);
+                    tagSearch.value = '';
+                    hideSuggestions();
+                } catch (err) {
+                    console.error('Create tag failed', err);
+                    alert('Failed to create tag');
+                }
+            };
+            tagSuggestions.appendChild(div);
+        }
+
+        function hideSuggestions() { tagSuggestions.style.display = 'none'; }
+        document.addEventListener('click', e => {
+            if (!tagSearch.contains(e.target) && !tagSuggestions.contains(e.target)) hideSuggestions();
+        });
+
+        /* === CO-AUTHOR HANDLING === */
+        authorSearch.addEventListener('input', async () => {
+            const q = authorSearch.value.trim();
+            authorSuggestions.innerHTML = '';
+            if (!q) { authorSuggestions.style.display = 'none'; return; }
+
+            try {
+                const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+                if (!res.ok) throw new Error('User search failed');
+                const users = await res.json();
+
+                users.forEach(u => {
+                    if (selectedCoAuthors.some(c => c.id === u.id)) return;
+                    const div = document.createElement('div');
+                    div.className = 'author-suggestion';
+                    div.innerHTML = `
+                        <img src="${u.profileImageUrl || 'https://i.pravatar.cc/28'}" alt="${u.name}">
+                        <div>
+                            <div style="font-weight:500;">${u.name}</div>
+                            <div style="font-size:.8rem;color:#666;">@${u.username}</div>
+                        </div>
+                    `;
+                    div.onclick = () => { addCoAuthor(u); authorSearch.value = ''; hideAuthorSuggestions(); };
+                    authorSuggestions.appendChild(div);
+                });
+            } catch (e) {
+                // fallback dummy
+                const dummy = [
+                    {id:1, name:'Vilas Poojari', username:'vilas', profileImageUrl:'https://i.pravatar.cc/28'},
+                    {id:2, name:'John Doe', username:'john', profileImageUrl:'https://i.pravatar.cc/28?img=2'}
+                ];
+                dummy.filter(u => !selectedCoAuthors.some(c => c.id === u.id))
+                     .filter(u => u.name.toLowerCase().includes(q.toLowerCase()) || u.username.includes(q.toLowerCase()))
+                     .forEach(u => {
+                         const div = document.createElement('div');
+                         div.className = 'author-suggestion';
+                         div.innerHTML = `<img src="${u.profileImageUrl}" alt="${u.name}"><div><div style="font-weight:500;">${u.name}</div><div style="font-size:.8rem;color:#666;">@${u.username}</div></div>`;
+                         div.onclick = () => { addCoAuthor(u); authorSearch.value=''; hideAuthorSuggestions(); };
+                         authorSuggestions.appendChild(div);
+                     });
+            }
+            authorSuggestions.style.display = 'block';
+        });
+
+        function addCoAuthor(user) {
+            if (selectedCoAuthors.some(c => c.id === user.id)) return;
+            selectedCoAuthors.push(user);
+
+            const span = document.createElement('span');
+            span.className = 'author-tag';
+            span.innerHTML = `
+                <img src="${user.profileImageUrl || 'https://i.pravatar.cc/20'}" alt="${user.name}">
+                <span>${user.name}</span>
+                <span class="author-tag-close" onclick="removeCoAuthor(${user.id})">×</span>
+            `;
+            selectedAuthorsDiv.appendChild(span);
+            renderCoAuthorFields();
+        }
+
+        window.removeCoAuthor = function(id) {
+            selectedCoAuthors = selectedCoAuthors.filter(u => u.id !== id);
+            renderCoAuthorFields();
+            // remove the DOM element safely (event.target may be undefined when called programmatically)
+            // We'll re-render the selected authors DOM:
+            renderSelectedAuthors();
+        };
+
+        function renderSelectedAuthors() {
+            selectedAuthorsDiv.innerHTML = '';
+            selectedCoAuthors.forEach(u => {
+                const span = document.createElement('span');
+                span.className = 'author-tag';
+                span.innerHTML = `
+                    <img src="${u.profileImageUrl || 'https://i.pravatar.cc/20'}" alt="${u.name}">
+                    <span>${u.name}</span>
+                    <span class="author-tag-close" onclick="removeCoAuthor(${u.id})">×</span>
+                `;
+                selectedAuthorsDiv.appendChild(span);
+            });
+        }
+
+        function renderCoAuthorFields() {
+            // remove previous hidden coAuthor inputs and re-create them (safe)
+            coAuthorFields.innerHTML = '';
+            selectedCoAuthors.forEach((user, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `coAuthor[${index}].id`;
+                input.value = user.id;
+                coAuthorFields.appendChild(input);
+            });
+            renderSelectedAuthors();
+        }
+
+        function hideAuthorSuggestions() { authorSuggestions.style.display = 'none'; }
+        document.addEventListener('click', e => {
+            if (!authorSearch.contains(e.target) && !authorSuggestions.contains(e.target)) hideAuthorSuggestions();
+        });
+
+        /* === SCHEDULER === */
+        document.getElementById('scheduleToggle').addEventListener('change', function () {
+            const pickerDiv = document.getElementById('datetimePicker');
+            pickerDiv.style.display = this.checked ? 'block' : 'none';
+            if (this.checked) {
+                if (picker) picker.destroy();
+                picker = flatpickr('#datetime', {
+                    enableTime: true, dateFormat: "Y-m-d H:i:s", minDate: "today",
+                    onChange: (sel, str) => {
+                        document.getElementById('scheduledAt').value = str;
+                        document.getElementById('publishBtn').textContent = 'Schedule';
+                    }
+                });
+                picker.open();
+            } else {
+                document.getElementById('publishBtn').textContent = 'Publish now';
+                document.getElementById('scheduledAt').value = '';
+                if (picker) { picker.destroy(); picker = null; }
+            }
+        });
+
+        /* === PUBLISH BUTTON === */
+        document.getElementById('publishBtn').addEventListener('click', () => {
+            // ensure content and hidden fields are up-to-date
+            document.getElementById('content').value = quill.root.innerHTML;
+            document.getElementById('audience').value = document.querySelector('input[name="modal-audience"]:checked').value;
+            document.getElementById('comments').value = document.querySelector('input[name="modal-comments"]:checked').value;
+            document.getElementById('sendEmail').value = document.getElementById('modalSendEmail').checked;
+            // regenerate coAuthor and tags hidden fields
+            renderCoAuthorFields();
+            updateTags();
+            document.getElementById('saveBtn').click();
+        });
+
+        /* === PREVIEW === */
+        window.preview = function () {
+            const win = window.open('', '_blank');
+            win.document.write(`
+                <!DOCTYPE html><html><head><title>Preview</title>
+                <style>body{font-family:-apple-system,sans-serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.7;background:white;}
+                       h1{font-size:3rem;margin:0;} .subtitle{font-size:1.5rem;color:#666;font-style:italic;margin:0.5rem 0 2rem;}
+                       img,video{max-width:100%;border-radius:8px;margin:1rem 0;}
+                </style></head><body>
+                <h1>${document.querySelector('.title').value || 'Untitled'}</h1>
+                ${document.querySelector('.subtitle').value ? `<p class="subtitle">${document.querySelector('.subtitle').value}</p>` : ''}
+                ${quill.root.innerHTML}
+                </body></html>
+            `);
+            win.document.close();
+        };
+
+        /* === OPEN/CLOSE MODAL === */
+        function openModal() { modal.classList.add('active'); }
+        function closeModal() { modal.classList.remove('active'); }
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+    });
+</script>
 </body>
 </html>
