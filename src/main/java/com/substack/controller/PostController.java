@@ -98,7 +98,7 @@ public class PostController {
 
         if (publicationId != null) {
             var publication = publicationService.findById(publicationId);
-            publication.ifPresent(post::setPublication);
+//            publication.ifPresent(post::setPublication);
         }
 
         if (scheduledAt != null && !scheduledAt.isBlank()) {

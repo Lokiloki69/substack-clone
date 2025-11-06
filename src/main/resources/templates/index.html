@@ -259,9 +259,11 @@
     <!-- RIGHT SIDEBAR - RECOMMENDATIONS -->
     <div class="trending-section">
         <h5>Recommended Publications</h5>
-        <div th:if="${publications != null}">
-            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">
-                <div class="publication-item">
+<!--        <div th:if="${publications != null}">-->
+<!--            <div th:each="pub : ${publications.subList(0, Math.min(publications.size(), 5))}">-->
+            <div th:if="${posts != null and !posts.isEmpty()}">
+                <div th:each="post : ${#lists.slice(posts, 0, posts.size() > 5 ? 5 : posts.size())}">
+            <div class="publication-item">
                     <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
                     <div class="publication-info" style="flex: 1;">
                         <h6 th:text="${pub.name}"></h6>

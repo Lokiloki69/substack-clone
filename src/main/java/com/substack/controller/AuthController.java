@@ -4,10 +4,18 @@ import com.substack.model.User;
 import com.substack.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -18,7 +26,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "auth/login";
+        return "user/login";
     }
 
     @PostMapping("/login")
@@ -26,31 +34,41 @@ public class AuthController {
             @RequestParam String email,
             @RequestParam String password,
             HttpSession session,
-            RedirectAttributes ra) {
+            Model model) {
 
         var user = userService.findByEmail(email);
 
         if (user.isEmpty()) {
-            ra.addFlashAttribute("error", "User not found");
             return "redirect:/auth/login";
         }
 
         User foundUser = user.get();
         if (!passwordEncoder.matches(password, foundUser.getPassword())) {
-            ra.addFlashAttribute("error", "Invalid password");
+            return "redirect:/auth/login";
+        }
+        authenticateUser(foundUser,session);
+        model.addAttribute("user", foundUser);
+
+        return "redirect:/auth/profile";
+    }
+
+    @GetMapping("/profile")
+    public String userProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getName();
+        if (userEmail == null) {
             return "redirect:/auth/login";
         }
 
-        session.setAttribute("userId", foundUser.getId());
-        session.setAttribute("userName", foundUser.getName());
-        ra.addFlashAttribute("success", "Logged in successfully");
-
-        return "redirect:/";
+        User user = userService.findByEmail(userEmail).get();
+        model.addAttribute("user", user);
+        model.addAttribute("posts",user.getPosts());
+        return "user/profile";
     }
 
     @GetMapping("/register")
     public String registerPage() {
-        return "auth/register";
+        return "user/signup";
     }
 
     @PostMapping("/register")
@@ -107,5 +125,20 @@ public class AuthController {
 
         ra.addFlashAttribute("success", "Check your email for password reset link");
         return "redirect:/auth/login";
+    }
+
+    private void authenticateUser(User user,  HttpSession session) {
+
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password("")
+                .roles("USER")
+                .build();
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
     }
 }

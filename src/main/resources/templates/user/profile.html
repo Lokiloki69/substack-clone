@@ -1,10 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${user.name} + ' | Substack Clone'">User Profile</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.4;
+        }
+        a { text-decoration: none; color: inherit; }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .profile-header img.avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .profile-info { flex: 1; }
+        .profile-info h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .handle {
+            color: #828282;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .bio {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .profile-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .btn-follow { background: #ff4600; color: #fff; margin-right: 10px; }
+        .btn-message { background: #f0f0f0; color: #333; }
+        .stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 10px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        .stat { display: flex; flex-direction: column; align-items: center; }
+        .value { font-weight: 600; font-size: 1.2rem; margin-bottom: 2px; }
+        .tabs {
+            margin-top: 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 40px;
+        }
+        .tabs button {
+            background: none; border: none; padding: 10px 0;
+            font-size: 1rem; cursor: pointer; color: #555;
+        }
+        .tabs button.active {
+            color: #000;
+            border-bottom: 2px solid #ff4600;
+        }
+        .tab-content { margin-top: 20px; }
+        .post-item { padding: 16px 0; border-bottom: 1px solid #eaeaea; }
+        .post-item:last-child { border: none; }
+        .post-item h3 { font-size: 1.2rem; margin-bottom: 6px; }
+        .meta { font-size: 0.85rem; color: #888; }
+        .excerpt { font-size: 0.95rem; color: #555; margin-top: 8px; }
+        @media (max-width: 600px) {
+            .profile-header { flex-direction: column; align-items: flex-start; }
+            .profile-header img.avatar { margin-bottom: 16px; }
+            .profile-actions { margin-top: 12px; }
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="profile-header">
+        <img class="avatar"
+             th:src="${user.profileImageUrl != null ? user.profileImageUrl : 'https://via.placeholder.com/88'}"
+             alt="Profile Image" />
+        <div class="profile-info">
+            <h1 th:text="${user.name}">User Name</h1>
+            <div class="handle" th:text="'@' + ${user.username}">@username</div>
+            <div class="bio" th:text="${user.bio != null ? user.bio : 'No bio yet.'}"></div>
 
+            <div class="stats">
+                <div class="stat">
+                    <div class="value" th:text="${subscriberCount}">0</div>
+                    <div class="label">Subscribers</div>
+                </div>
+                <div class="stat">
+                    <div class="value" th:text="${postCount}">0</div>
+                    <div class="label">Posts</div>
+                </div>
+                <div class="stat">
+                    <div class="value" th:text="${subscriptionsCount}">0</div>
+                    <div class="label">Following</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <button class="btn-follow">Follow</button>
+            <button class="btn-message">Message</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="active" data-tab="posts">Posts</button>
+        <button data-tab="likes">Likes</button>
+        <button data-tab="reads">Reads</button>
+    </div>
+
+    <!-- POSTS TAB -->
+    <div class="tab-content" id="posts">
+        <div th:if="${posts.isEmpty()}">
+            <p>No posts published yet.</p>
+        </div>
+
+        <div th:each="post : ${posts}">
+            <div class="post-item">
+                <h3 th:text="${post.title}">Post Title</h3>
+                <div class="meta"
+                     th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')} + ' · ' + ${post.readTime} + ' min read'"></div>
+                <p class="excerpt" th:text="${post.subTitle}">Subtitle or short excerpt here...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIKES TAB -->
+    <div class="tab-content" id="likes" style="display:none;">
+        <div th:each="like : ${user.likes}">
+            <div class="post-item">
+                <h3 th:text="${like.post.title}"></h3>
+                <div class="meta"
+                     th:text="${#temporals.format(like.post.createdAt, 'MMM dd, yyyy')}"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- READS TAB -->
+    <div class="tab-content" id="reads" style="display:none;">
+        <div th:each="activity : ${user.activities}">
+            <div class="post-item">
+                <h3 th:text="${activity.post.title}"></h3>
+                <div class="meta"
+                     th:text="${#temporals.format(activity.timestamp, 'MMM dd, yyyy')}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple tab switch logic
+    const tabs = document.querySelectorAll('.tabs button');
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelector('.tabs button.active').classList.remove('active');
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById(target).style.display = 'block';
+        });
+    });
+</script>
 </body>
 </html>
+
+
