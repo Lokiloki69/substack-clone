@@ -17,6 +17,8 @@ public class UserService {
 
     public List<User> searchUserList(String q) {
         return userRepository.findTop10ByNameContainingIgnoreCaseOrUsernameContainingIgnoreCase(q, q);
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user);
     }

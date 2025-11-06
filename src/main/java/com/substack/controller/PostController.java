@@ -2,7 +2,11 @@
 package com.substack.controller;
 
 import com.substack.model.Post;
+import com.substack.model.User;
+import com.substack.service.LikeService;
 import com.substack.service.PostService;
+import com.substack.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 public class PostController {
 
     private final PostService postService;
+    private  final LikeService likeService;
+    private final UserService userService;
 
     @GetMapping("/new")
     public String newPost(Model model) {

@@ -12,6 +12,8 @@ import com.substack.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +23,10 @@ import java.util.stream.Collectors;
 @Transactional
 public class PostService {
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
+    private final MediaFileRepository mediaFileRepository;
     private final UserRepository userRepository;
 
     private final PostRepository postRepo;
-    private final TagRepository tagRepo;
 
     public Post savePost(Post post) {
 

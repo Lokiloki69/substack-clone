@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/media")
 @RequiredArgsConstructor
-public class MediaController {
+public class RestMediaController {
 
     private final MediaFileRepository mediaFileRepository;
 

@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
-public class TagController {
+public class RestTagController {
 
     private final TagRepository tagRepo;
 
