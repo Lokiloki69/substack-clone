@@ -53,8 +53,9 @@ public class AuthController {
         }
         authenticateUser(foundUser,session);
         model.addAttribute("user", foundUser);
+        session.setAttribute("email",foundUser.getEmail());
 
-        return "redirect:/auth/profile";
+        return "redirect:/";
     }
 
     @GetMapping("/profile")

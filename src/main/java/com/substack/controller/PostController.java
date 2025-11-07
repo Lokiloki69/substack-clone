@@ -31,7 +31,7 @@ public class PostController {
                 .title("")
                 .subTitle("")
                 .content("")
-                .isPublished(false)
+                .isPublished(true)
                 .audience("everyone")
                 .comments("everyone")
                 .sendEmail(true)
@@ -48,7 +48,24 @@ public class PostController {
             @RequestParam(required = false) String comments,
             @RequestParam(required = false) String tags,
             @RequestParam(defaultValue = "true") boolean sendEmail,
+            HttpSession session,
             RedirectAttributes ra) {
+
+        var user = userService.findByEmail((String) session.getAttribute("email"));
+
+        if (user.isEmpty()) {
+            return "redirect:/auth/login";
+        }
+
+        User foundUser = user.get();
+
+//        Long userId = (Long) session.getAttribute("userId");
+//        if (userId == null) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        User user = userService.findById(userId);
+        post.setAuthor(foundUser);
 
         post.setAudience(audience != null ? audience : "everyone");
         post.setComments(comments != null ? comments : "everyone");

@@ -17,6 +17,15 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SubscriptionRepository subscriptionRepository;
 
+
+    public void send(String to, String subject, String body) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(to);
+        msg.setSubject(subject);
+        msg.setText(body);
+        mailSender.send(msg);
+    }
+
     public void sendEmailToSubscribers(Post post, Publication publication) {
         List<Subscription> subscribers = subscriptionRepository
                 .findByAuthorIdAndActive(publication.getOwner().getId(), true);

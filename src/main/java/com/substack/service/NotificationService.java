@@ -10,7 +10,7 @@ public class NotificationService {
     private final EmailService emailService;
 
     public void notifyNewPost(Post post, Publication publication) {
-        emailService.sendEmailToSubscribers(post, publication);
+//        emailService.sendEmailToSubscribers(post, publication);
     }
 
     public void notifyNewSubscriber(User subscriber, Publication publication) {
@@ -21,6 +21,7 @@ public class NotificationService {
                 subscriber.getName() + " subscribed to " + publication.getName()
         );
     }
+
 
     public void notifyNewComment(Comment comment) {
         // Send notification to post author
