@@ -88,6 +88,21 @@ public class PostController {
         return "post/create";
     }
 
+    @GetMapping("/view/{id}")
+    public String viewPost(@PathVariable Long id,Model model){
+        Post post = postService.findById(id);
+        model.addAttribute("post", post);
+        return "post/view";
+    }
+
+    @GetMapping("/view")
+    public String viewPosts(Model model){
+        User user = authService.getCurrentUser();
+        model.addAttribute("user", user);
+        model.addAttribute("posts", user.getPosts());
+        return "post/viewPosts";
+    }
+
     @PostMapping("/{id}/like")
     public String likePost(@PathVariable Long id, HttpSession session, RedirectAttributes ra) {
         Long userId = (Long) session.getAttribute("userId");
