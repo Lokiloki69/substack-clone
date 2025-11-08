@@ -6,7 +6,8 @@ import com.substack.model.Subscription;
 import com.substack.model.User;
 import com.substack.repository.PostRepository;
 import com.substack.repository.*;
-import com.substack.service.PublicationService;
+import com.substack.service.PostService;
+import com.substack.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,48 +15,43 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
     private final PostRepository postRepository;
-    private final PublicationService publicationService;
+    private final PublicationRepository publicationRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final PostService postService;
+    private final UserService userService;
 
     @GetMapping("/")
-    public String home(Model model, HttpSession session) {
-        // Get trending/recommended posts
-        List<Post> trendingPosts = postRepository.findByIsPublishedTrue();
+    public String home(
+            @RequestParam(defaultValue = "trending") String feedType,
+            Model model,
+            HttpSession session) {
 
-        // Get publications
-//        List<Publication> publications = publicationRepository.findByActive(true);
+//        Long userId = (Long) session.getAttribute("userId");
+        Optional<User> currentUser = userService.findByEmail((String) session.getAttribute("email"));
+        ;
 
-        // Get user if logged in
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId != null) {
-            User user = userRepository.findById(userId).orElse(null);
-            model.addAttribute("currentUser", user);
-
-            // Get user's subscriptions
-            List<Subscription> subscriptions = subscriptionRepository
-                    .findBySubscriberIdAndActive(userId, true);
-            model.addAttribute("userSubscriptions", subscriptions);
+        if (currentUser.isPresent()) {
+//            currentUser = userRepository.findById(userId).orElse(null);
+            model.addAttribute("currentUser", currentUser.get());
         }
 
-        model.addAttribute("posts", trendingPosts);
-//        model.addAttribute("publications", publications);
-        model.addAttribute("publications", publicationService.findActivePublications());
+        List<Post> posts = postService.getPosts(feedType, currentUser);
+
+        List<Publication> publications = publicationRepository.findByActive(true);
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("publications", publications);
+        model.addAttribute("selectedFeed", feedType);
 
         return "index";
     }
-
-//    @GetMapping("/explore")
-//    public String explore(Model model) {
-//        List<Publication> publications = publicationRepository.findByActive(true);
-//        model.addAttribute("publications", publications);
-//        return "explore";
-//    }
 
     @GetMapping("/explore")
     public String explore(Model model) {

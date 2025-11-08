@@ -25,10 +25,10 @@ public class NotificationService {
 
     public void notifyNewComment(Comment comment) {
         // Send notification to post author
-        emailService.sendEmail(
-                comment.getPost().getAuthor().getEmail(),
-                "New Comment on " + comment.getPost().getTitle(),
-                comment.getName() + " commented: " + comment.getComment()
-        );
+//        emailService.sendEmail(
+//                comment.getPost().getAuthor().getEmail(),
+//                "New Comment on " + comment.getPost().getTitle(),
+//                comment.getName() + " commented: " + comment.getComment()
+//        );
     }
 }
