@@ -5,7 +5,49 @@
     <title th:text="${post.title}">Post</title>
 
     <style>
-        body {
+        .like-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 🤍 Default white button */
+.like-btn {
+  background-color: white;
+  color: #555;
+  border: 2px solid #ddd;
+  padding: 10px 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect for white button */
+.like-btn:hover {
+  border-color: #ff6b81;
+  color: #ff6b81;
+}
+
+/* 💖 When user has liked */
+.like-btn.liked {
+  background-color: #ff6b81;  /* You can change to blue, pink, red, etc. */
+  color: white;
+  border-color: #ff6b81;
+  box-shadow: 0 0 10px rgba(255, 107, 129, 0.5);
+}
+
+/* Hover effect for liked state */
+.like-btn.liked:hover {
+  background-color: #ff4757;
+}
+
+.like-count {
+  font-weight: 500;
+  color: #444;
+}
+    body {
           font-family: "Georgia", serif;
           background-color: #ffffff;
           color: #222;
@@ -223,10 +265,15 @@
     <!-- Like Section -->
     <div class="like-section">
         <form th:action="@{'/posts/' + ${post.id} + '/like'}" method="post">
-            <button class="like-btn" type="submit">❤️ Like</button>
+            <button type="submit"
+                    class="like-btn"
+                    th:classappend="${hasLiked} ? ' liked' : ''"
+                    th:text="${hasLiked} ? '💖 Liked' : '🤍 Like'">
+            </button>
         </form>
         <span class="like-count" th:text="${likeCount} + ' likes'">0 likes</span>
     </div>
+
 
     <hr>
 

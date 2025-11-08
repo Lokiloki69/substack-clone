@@ -162,8 +162,9 @@
             <div class="post-item">
                 <h3 th:text="${post.title}">Post Title</h3>
                 <div class="meta"
-                     th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')} + ' · ' + ${post.readTime} + ' min read'"></div>
+                     th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}"></div>
                 <p class="excerpt" th:text="${post.subTitle}">Subtitle or short excerpt here...</p>
+                <a th:href="@{/posts/view/{id}(id=${post.id})}" class="view-btn">View</a>
             </div>
         </div>
     </div>
@@ -173,6 +174,7 @@
         <div th:each="like : ${user.likes}">
             <div class="post-item">
                 <h3 th:text="${like.post.title}"></h3>
+                <a th:href="@{/posts/view/{id}(id=${like.post.id})}" class="view-btn">View</a>
                 <div class="meta"
                      th:text="${#temporals.format(like.post.createdAt, 'MMM dd, yyyy')}"></div>
             </div>

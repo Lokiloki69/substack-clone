@@ -18,7 +18,8 @@ public class LikeService {
         Optional<Like> existing = likeRepository.findByUserIdAndPostId(user.getId(), post.getId());
 
         if (existing.isPresent()) {
-            return existing.get();
+            existing.ifPresent(likeRepository::delete);
+            return null;
         }
 
         Like like = Like.builder()
@@ -40,6 +41,11 @@ public class LikeService {
 
     public boolean isLiked(Long userId, Long postId) {
         return likeRepository.findByUserIdAndPostId(userId, postId).isPresent();
+    }
+
+    public boolean hasUserLikedPost(Long id, Long id1) {
+        Optional<Like> like = likeRepository.findByUserIdAndPostId(id, id1);
+        return like.isPresent();
     }
 }
 
