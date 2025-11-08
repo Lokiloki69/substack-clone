@@ -135,7 +135,6 @@ public class AuthController {
     }
 
     private void authenticateUser(User user,  HttpSession session) {
-
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password("")

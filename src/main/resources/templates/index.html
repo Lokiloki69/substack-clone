@@ -243,10 +243,13 @@
             <span>Write</span>
         </a>
         <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">
-            <span>Inbox</span>
+            <span>Subscriptions</span>
         </a>
         <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">
             <span>New Publication</span>
+        </a>
+        <a th:if="${currentUser != null}" href="/auth/profile" class="sidebar-item">
+            <span>Profile</span>
         </a>
     </div>
 

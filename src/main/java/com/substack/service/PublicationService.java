@@ -62,5 +62,9 @@ public class PublicationService {
             publicationRepository.save(publication);
         }
     }
+
+    public List<Publication> findActivePublications() {
+        return publicationRepository.findByActive(true);
+    }
 }
 

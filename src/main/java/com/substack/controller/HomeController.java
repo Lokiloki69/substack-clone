@@ -6,9 +6,6 @@ import com.substack.model.Subscription;
 import com.substack.model.User;
 import com.substack.repository.PostRepository;
 import com.substack.repository.*;
-import com.substack.service.FeedService;
-import com.substack.service.PostService;
-import com.substack.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -54,13 +51,11 @@ public class HomeController {
         return "index";
     }
 
-
-
     @GetMapping("/explore")
     public String explore(Model model) {
-        List<Publication> publications = publicationRepository.findByActive(true);
-        model.addAttribute("publications", publications);
-        return "explore";
+        List<User> creators = userRepository.findAll(); // Filter later if needed
+        model.addAttribute("creators", creators);
+        return "user/explore";
     }
 
     @GetMapping("/search")
