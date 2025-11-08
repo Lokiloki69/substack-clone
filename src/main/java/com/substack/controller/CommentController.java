@@ -18,10 +18,8 @@ public class CommentController {
     @PostMapping("/{postId}")
     public String addComment(
             @PathVariable Long postId,
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String comment,
-            RedirectAttributes ra) {
+            @RequestParam(required = false) Long parentCommentId,
+            @RequestParam String name) {
 
         Post post = postRepository.findById(postId).orElse(null);
         if (post == null) {
@@ -29,16 +27,14 @@ public class CommentController {
         }
 
         Comment newComment = Comment.builder()
-                .name(name)
-                .email(email)
-                .comment(comment)
-                .post(post)
+                .text(name)
+                .post(postRepository.findById(postId).get())
+//                .parentComment(commentService.)
                 .build();
 
         commentService.addComment(newComment);
-        ra.addFlashAttribute("success", "Comment added!");
 
-        return "redirect:/posts/" + postId;
+        return "redirect:/posts/view/"+ postId;
     }
 
     @PostMapping("/{commentId}/delete")

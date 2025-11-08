@@ -1,7 +1,7 @@
 // src/main/java/com/substack/controller/PostController.java
 package com.substack.controller;
 
-import com.substack.model.Interest;
+import com.substack.model.Like;
 import com.substack.model.Post;
 import com.substack.model.User;
 import com.substack.service.LikeService;
@@ -17,8 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/posts")
@@ -64,8 +62,6 @@ public class PostController {
         }
 
         User foundUser = user.get();
-        Set<Interest> interests = foundUser.getInterests();
-
         post.setAuthor(foundUser);
 
         post.setAudience(audience != null ? audience : "everyone");
@@ -79,53 +75,37 @@ public class PostController {
             post.setScheduledAt(null);
         }
 
-        postService.savePost(post,foundUser);
+        Post p = postService.savePost(post);
 
 //        ra.addFlashAttribute("success", "Post saved!");
 //        return "redirect:/posts/" + post.getId();
-        return "redirect:/";
+        return "redirect:/posts/view/"+ p.getId();
     }
 
     @GetMapping("/view/{id}")
     public String viewPost(@PathVariable Long id,Model model){
         Post post = postService.findById(id);
+        User user = authService.getCurrentUser();
+        boolean hasLiked = user != null && likeService.hasUserLikedPost(user.getId(), id);
         model.addAttribute("post", post);
+        model.addAttribute("likeCount",post.getLikes().size());
+        model.addAttribute("hasLiked", hasLiked);
         return "post/view";
     }
 
-    @GetMapping("/view")
-    public String viewPosts(Model model){
-        User user = authService.getCurrentUser();
-        model.addAttribute("user", user);
-        model.addAttribute("posts", user.getPosts());
-        return "post/viewPosts";
-    }
-
     @PostMapping("/{id}/like")
-    public String likePost(@PathVariable Long id, HttpSession session, RedirectAttributes ra) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+    public String likePost(@PathVariable Long id, Model model) {
+        User user = authService.getCurrentUser();
+        if (user == null) {
             return "redirect:/auth/login";
         }
 
         Post post = postService.findById(id);
-        User user = userService.findById(userId);
-
+        model.addAttribute("post", post);
         if (post != null && user != null) {
             likeService.likePost(user, post);
         }
-
-        return "redirect:/posts/" + id;
+        return "redirect:/posts/view/" + id;
     }
 
-    @PostMapping("/{id}/unlike")
-    public String unlikePost(@PathVariable Long id, HttpSession session, RedirectAttributes ra) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
-
-        likeService.unlikePost(userId, id);
-        return "redirect:/posts/" + id;
-    }
 }
