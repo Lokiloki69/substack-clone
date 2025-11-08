@@ -6,6 +6,8 @@ import com.substack.model.Subscription;
 import com.substack.model.User;
 import com.substack.repository.PostRepository;
 import com.substack.repository.*;
+import com.substack.service.PostService;
+import com.substack.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

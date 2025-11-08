@@ -32,7 +32,7 @@ public class CommentController {
 //                .parentComment(commentService.)
                 .build();
 
-        commentService.addComment(newComment);
+//        commentService.addComment(newComment);
 
         return "redirect:/posts/view/"+ postId;
     }
