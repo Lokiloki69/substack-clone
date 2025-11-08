@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Subscriptions | Substack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #FF6D00;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --border-color: #E0E0E0;
+            --bg-light: #F5F5F5;
+        }
+
+        body {
+            background: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        .creator-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .active-filter {
+            background: var(--primary-color);
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="main-content" style="display:grid; grid-template-columns:280px 1fr; gap:20px; padding:20px;">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <a href="/" class="sidebar-item">Home</a>
+        <a href="/explore" class="sidebar-item">Explore</a>
+        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">Write</a>
+        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item active-filter">Subscriptions</a>
+        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">New Publication</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div>
+        <h3 style="margin-bottom:20px; font-weight:700;">Your Subscriptions</h3>
+
+        <!-- FILTER TABS -->
+        <div class="mb-3">
+            <a th:href="@{/subscriptions/manage(filter='all')}"
+               class="btn me-2"
+               th:classappend="${filter == 'all'} ? 'active-filter' : ''">All</a>
+
+            <a th:href="@{/subscriptions/manage(filter='free')}"
+               class="btn me-2"
+               th:classappend="${filter == 'free'} ? 'active-filter' : ''">Free</a>
+
+            <a th:href="@{/subscriptions/manage(filter='paid')}"
+               class="btn me-2"
+               th:classappend="${filter == 'paid'} ? 'active-filter' : ''">Paid</a>
+        </div>
+
+        <!-- SUBSCRIPTIONS LIST -->
+        <div th:if="${subscriptions.isEmpty()}">
+            <p class="text-muted">No subscriptions found for this filter.</p>
+        </div>
+
+        <div th:each="sub : ${subscriptions}" class="creator-card">
+            <h5 th:text="${sub.author.name}"></h5>
+            <p class="text-muted" th:text="'Type: ' + ${sub.type}"></p>
+            <p th:if="${sub.type == 'PAID'}" class="text-warning">Paid Plan Active</p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
