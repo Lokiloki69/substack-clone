@@ -21,7 +21,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
           and (s.endDate is null or s.endDate > CURRENT_TIMESTAMP)
     """)
     List<User> findSubscribersByAuthorId(Long authorId);
-
+    List<Subscription> findBySubscriberAndActiveTrue(User subscriber);
     Optional<Subscription> findBySubscriberIdAndAuthorId(Long subscriberId, Long authorId);
     List<Subscription> findByAuthorIdAndActive(Long authorId, boolean active);
     List<Subscription> findBySubscriberIdAndActive(Long subscriberId, boolean active);

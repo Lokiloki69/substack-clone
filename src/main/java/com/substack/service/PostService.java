@@ -3,7 +3,6 @@ package com.substack.service;
 
 import com.substack.model.MediaFile;
 import com.substack.model.Post;
-import com.substack.model.Tag;
 import com.substack.model.User;
 import com.substack.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +25,10 @@ public class PostService {
     private final SubscriptionRepository subscriptionRepository;
     private final PostRepository postRepo;
     private final EmailService emailService;
+    private final RelevanceCalculationService relevanceCalculationService;
+    private final FeedService feedService;
 
-    public Post savePost(Post post) {
+    public Post savePost(Post post, User foundUser) {
 
         if(post.getFiles() != null) {
             List<MediaFile> mediaFiles = new ArrayList<>();
@@ -38,7 +40,10 @@ public class PostService {
             post.setFiles(mediaFiles);
         }
 
+        post.setAuthor(foundUser);
+
         Post saved = postRepository.save(post);
+        relevanceCalculationService.updateRelevanceForPostAuthorInterests(saved);
         // 1) Email creator immediately
         sendEmailToCreator(saved);
 
@@ -118,5 +123,28 @@ public class PostService {
     public List<Post> searchPosts(String query) {
         // Implement full-text search later
         return postRepository.findByIsPublishedTrue();
+    }
+
+    public List<Post> getPosts(String feedType, Optional<User> currentUser) {
+        List<Post> posts;
+
+        switch (feedType) {
+            case "following" -> {
+                if (currentUser.isPresent()) {
+                    posts = feedService.getFollowingPosts(currentUser.get());
+                } else {
+                    posts = postRepository.findByIsPublishedTrueOrderByCreatedAtDesc();
+                }
+            }
+            case "foryou" -> {
+                if (currentUser.isPresent()) {
+                    posts = feedService.getPersonalizedPosts(currentUser.get());
+                } else {
+                    posts = postRepository.findByIsPublishedTrueOrderByCreatedAtDesc();
+                }
+            }
+            default -> posts = postRepository.findByIsPublishedTrueOrderByCreatedAtDesc();
+        }
+        return posts;
     }
 }

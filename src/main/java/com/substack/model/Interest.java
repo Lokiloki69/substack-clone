@@ -7,6 +7,9 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @Table(name = "interests")
 @Getter
@@ -21,4 +24,12 @@ public class Interest {
 
     @ManyToMany(mappedBy = "interests")
     private Set<User> users = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE})
+    @JoinTable(
+            name = "interest_tag_mapping",
+            joinColumns = @JoinColumn(name = "interest_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
 }

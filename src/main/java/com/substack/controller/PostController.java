@@ -1,6 +1,7 @@
 // src/main/java/com/substack/controller/PostController.java
 package com.substack.controller;
 
+import com.substack.model.Interest;
 import com.substack.model.Post;
 import com.substack.model.User;
 import com.substack.service.LikeService;
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/posts")
@@ -61,13 +64,8 @@ public class PostController {
         }
 
         User foundUser = user.get();
+        Set<Interest> interests = foundUser.getInterests();
 
-//        Long userId = (Long) session.getAttribute("userId");
-//        if (userId == null) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        User user = userService.findById(userId);
         post.setAuthor(foundUser);
 
         post.setAudience(audience != null ? audience : "everyone");
@@ -81,11 +79,11 @@ public class PostController {
             post.setScheduledAt(null);
         }
 
-        postService.savePost(post);
+        postService.savePost(post,foundUser);
 
 //        ra.addFlashAttribute("success", "Post saved!");
 //        return "redirect:/posts/" + post.getId();
-        return "post/create";
+        return "redirect:/";
     }
 
     @GetMapping("/view/{id}")

@@ -5,7 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,4 +24,6 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @ManyToMany(mappedBy = "tags")
+    private Set<Interest> interests = new HashSet<>();
 }
