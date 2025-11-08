@@ -121,9 +121,28 @@
             </div>
         </div>
 
-        <div class="profile-actions">
-            <button class="btn-follow">Follow</button>
-            <button class="btn-message">Message</button>
+        <div class="profile-actions" th:if="${!isCurrentUser}">
+
+            <!-- If NOT subscribed -->
+            <form th:if="${!isSubscribed}"
+                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"
+                  method="post">
+                <input type="hidden" name="type" value="FREE">
+                <button type="submit" class="btn-follow">Subscribe</button>
+            </form>
+
+            <form th:if="${!isSubscribed}"
+                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"
+                  method="post">
+                <input type="hidden" name="type" value="PAID">
+                <button type="submit" class="btn-message">Go Premium</button>
+            </form>
+
+
+            <!-- If already subscribed -->
+            <button th:if="${isSubscribed}" class="btn-message" disabled>
+                Subscribed
+            </button>
         </div>
     </div>
 

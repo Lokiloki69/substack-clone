@@ -6,6 +6,7 @@ import com.substack.model.Subscription;
 import com.substack.model.User;
 import com.substack.repository.PostRepository;
 import com.substack.repository.*;
+import com.substack.service.PublicationService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final PostRepository postRepository;
-    private final PublicationRepository publicationRepository;
+    private final PublicationService publicationService;
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
 
@@ -28,7 +29,7 @@ public class HomeController {
         List<Post> trendingPosts = postRepository.findByIsPublishedTrue();
 
         // Get publications
-        List<Publication> publications = publicationRepository.findByActive(true);
+//        List<Publication> publications = publicationRepository.findByActive(true);
 
         // Get user if logged in
         Long userId = (Long) session.getAttribute("userId");
@@ -43,15 +44,24 @@ public class HomeController {
         }
 
         model.addAttribute("posts", trendingPosts);
-        model.addAttribute("publications", publications);
+//        model.addAttribute("publications", publications);
+        model.addAttribute("publications", publicationService.findActivePublications());
+
         return "index";
     }
 
+//    @GetMapping("/explore")
+//    public String explore(Model model) {
+//        List<Publication> publications = publicationRepository.findByActive(true);
+//        model.addAttribute("publications", publications);
+//        return "explore";
+//    }
+
     @GetMapping("/explore")
     public String explore(Model model) {
-        List<Publication> publications = publicationRepository.findByActive(true);
-        model.addAttribute("publications", publications);
-        return "explore";
+        List<User> creators = userRepository.findAll(); // Filter later if needed
+        model.addAttribute("creators", creators);
+        return "user/explore";
     }
 
     @GetMapping("/search")

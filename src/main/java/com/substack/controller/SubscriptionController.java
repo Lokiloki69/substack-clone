@@ -1,6 +1,8 @@
 package com.substack.controller;
 
 import com.substack.model.*;
+import com.substack.repository.SubscriptionRepository;
+import com.substack.repository.UserRepository;
 import com.substack.service.SubscriptionService;
 import com.substack.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -18,62 +20,37 @@ import java.util.List;
 @RequestMapping("/subscriptions")
 @RequiredArgsConstructor
 public class SubscriptionController {
-    private final SubscriptionService subscriptionService;
-    private final UserService userService;
 
-    @PostMapping("/{authorId}/subscribe")
+    private final SubscriptionService subscriptionService;
+
+    @PostMapping("/join/{authorId}")
     public String subscribe(
             @PathVariable Long authorId,
-            @RequestParam(defaultValue = "FREE") String type,
-            HttpSession session,
-            RedirectAttributes ra) {
+            @RequestParam SubscriptionType type,
+            HttpSession session) {
 
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
 
-        User subscriber = userService.findById(userId);
-        User author = userService.findById(authorId);
+        subscriptionService.subscribe(email, authorId, type);
 
-        if (subscriber != null && author != null) {
-            SubscriptionType subType = SubscriptionType.valueOf(type);
-            subscriptionService.subscribe(subscriber, author, subType, null);
-            ra.addFlashAttribute("success", "Subscribed!");
-        }
-
-        return "redirect:/user/" + authorId;
-    }
-
-    @PostMapping("/{authorId}/unsubscribe")
-    public String unsubscribe(
-            @PathVariable Long authorId,
-            HttpSession session,
-            RedirectAttributes ra) {
-
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
-
-        subscriptionService.unsubscribe(userId, authorId);
-        ra.addFlashAttribute("success", "Unsubscribed!");
-
-        return "redirect:/user/" + authorId;
+        return "redirect:/subscriptions/manage";
     }
 
     @GetMapping("/manage")
-    public String manageSubscriptions(Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
+    public String manage(
+            @RequestParam(defaultValue = "all") String filter,
+            HttpSession session,
+            Model model) {
 
-        User user = userService.findById(userId);
-        List<Subscription> subscriptions = subscriptionService.getSubscriptions(user);
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
 
-        model.addAttribute("subscriptions", subscriptions);
-        return "subscription/manage";
+        model.addAttribute("subscriptions",
+                subscriptionService.getSubscriptions(email, filter));
+
+        model.addAttribute("filter", filter);
+
+        return "subscriptions/manage";
     }
 }
-

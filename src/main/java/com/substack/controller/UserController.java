@@ -19,6 +19,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public String userProfile(@PathVariable Long id, Model model, HttpSession session) {
+
         User user = userService.findById(id);
         if (user == null) {
             return "redirect:/";
@@ -28,6 +29,12 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("isCurrentUser", user.getId().equals(currentUserId));
 
+        // ✅ Add counts needed by your HTML
+        model.addAttribute("postCount", user.getPosts().size());
+        model.addAttribute("subscriberCount", subscriptionService.countSubscribers(id));
+        model.addAttribute("subscriptionsCount", subscriptionService.countFollowing(id));
+        model.addAttribute("posts", user.getPosts());
+
         if (currentUserId != null && !user.getId().equals(currentUserId)) {
             boolean isSubscribed = subscriptionService.isSubscribed(currentUserId, id);
             model.addAttribute("isSubscribed", isSubscribed);
@@ -35,6 +42,7 @@ public class UserController {
 
         return "user/profile";
     }
+
 
     @GetMapping("/settings")
     public String userSettings(Model model, HttpSession session) {
