@@ -34,6 +34,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     List<Subscription> findByAuthorIdAndActive(Long id, boolean b);
 
+    @Query("""
+    SELECT s.subscriber
+    FROM Subscription s
+    WHERE s.author.id = :id
+      AND s.active = true
+""")
     List<User> findSubscribersByAuthorId(Long id);
 
     boolean existsBySubscriberIdAndAuthorIdAndActive(Long currentUserId, Long authorId, boolean b);

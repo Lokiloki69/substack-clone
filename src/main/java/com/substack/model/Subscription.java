@@ -23,12 +23,12 @@ public class Subscription {
 
     // 🔹 Who subscribed
     @ManyToOne
-    @JoinColumn(name = "subscriber_id", nullable = false)
+    @JoinColumn(name = "subscriber_id")
     private User subscriber;
 
     // 🔹 Whom they subscribed to
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id")
     private User author;
 
     // 🔹 Type of subscription

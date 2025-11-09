@@ -29,4 +29,7 @@ public class Like {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    @ManyToOne
+    private Comment comment;
 }
