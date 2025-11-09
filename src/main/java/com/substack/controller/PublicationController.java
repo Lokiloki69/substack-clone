@@ -2,15 +2,15 @@ package com.substack.controller;
 
 import com.substack.model.Post;
 import com.substack.model.Publication;
-import com.substack.model.*;
-import com.substack.repository.*;
-import com.substack.service.*;
+import com.substack.model.User;
+import com.substack.service.PostService;
+import com.substack.service.PublicationService;
+import com.substack.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -19,94 +19,135 @@ import java.util.List;
 @RequestMapping("/publications")
 @RequiredArgsConstructor
 public class PublicationController {
-    private final PublicationService publicationService;
-    private final UserService userService;
-    private final PostRepository postRepository;
 
+    private final PublicationService publicationService;
+    private final PostService postService;
+    private final UserService userService;
+
+    // ✅ View publication
     @GetMapping("/{slug}")
     public String viewPublication(@PathVariable String slug, Model model) {
-        PublicationService service = null;
-        var publication = publicationService.findBySlug(slug);
 
-        if (publication.isEmpty()) {
-            return "redirect:/";
-        }
+        var pubOpt = publicationService.findBySlug(slug);
+        if (pubOpt.isEmpty()) return "redirect:/";
 
-        Publication pub = publication.get();
-        List<Post> posts = postRepository.findByPublicationIdAndIsPublishedTrue(pub.getId());
+        Publication pub = pubOpt.get();
+        List<Post> posts = postService.getPublicationPosts(pub.getId());
 
         model.addAttribute("publication", pub);
         model.addAttribute("posts", posts);
+
         return "publication/view";
     }
 
+    // ✅ Create publication page
     @GetMapping("/new")
-    public String newPublication(Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
+    public String newPublication(HttpSession session) {
+
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
+
         return "publication/create";
     }
 
+    // ✅ Save publication
     @PostMapping("/save")
-    public String savePublication(
-            @ModelAttribute Publication publication,
-            HttpSession session,
-            RedirectAttributes ra) {
+    public String savePublication(@ModelAttribute Publication publication,
+                                  HttpSession session,
+                                  RedirectAttributes ra) {
 
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
 
-        User user = userService.findById(userId);
-        publication.setOwner(user);
-        publication.setSlug(publication.getName().toLowerCase().replaceAll(" ", "-"));
+        User owner = userService.findByEmail(email).orElseThrow();
+
+        publication.setOwner(owner);
+        publication.setSlug(publication.getName().toLowerCase().replace(" ", "-"));
 
         Publication saved = publicationService.createPublication(publication);
-        ra.addFlashAttribute("success", "Publication created!");
 
+        ra.addFlashAttribute("success", "Publication created");
         return "redirect:/publications/" + saved.getSlug();
     }
 
+    // ✅ Settings page
     @GetMapping("/settings/{id}")
-    public String publicationSettings(@PathVariable Long id, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/auth/login";
-        }
+    public String settings(@PathVariable Long id,
+                           Model model,
+                           HttpSession session) {
 
-        var publication = publicationService.findById(id);
-        if (publication.isEmpty() || !publication.get().getOwner().getId().equals(userId)) {
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
+
+        User owner = userService.findByEmail(email).orElseThrow();
+
+        var pubOpt = publicationService.findById(id);
+        if (pubOpt.isEmpty()) return "redirect:/";
+
+        Publication pub = pubOpt.get();
+
+        // ✅ Only publication owner can see settings
+        if (!pub.getOwner().getId().equals(owner.getId())) {
             return "redirect:/";
         }
 
-        model.addAttribute("publication", publication.get());
+        model.addAttribute("publication", pub);
+        model.addAttribute("members", pub.getMembers());
+
         return "publication/settings";
     }
 
+    // ✅ Add member to publication
     @PostMapping("/{id}/add-member")
-    public String addMember(
-            @PathVariable Long id,
-            @RequestParam String email,
-            HttpSession session,
-            RedirectAttributes ra) {
+    public String addMember(@PathVariable Long id,
+                            @RequestParam String email,
+                            HttpSession session,
+                            RedirectAttributes ra) {
 
-        Long userId = (Long) session.getAttribute("userId");
-        var publication = publicationService.findById(id);
+        String ownerEmail = (String) session.getAttribute("email");
+        if (ownerEmail == null) return "redirect:/auth/login";
 
-        if (publication.isEmpty() || !publication.get().getOwner().getId().equals(userId)) {
+        User owner = userService.findByEmail(ownerEmail).orElseThrow();
+
+        var pubOpt = publicationService.findById(id);
+        if (pubOpt.isEmpty()) return "redirect:/";
+
+        Publication pub = pubOpt.get();
+
+        if (!pub.getOwner().getId().equals(owner.getId())) {
             return "redirect:/";
         }
 
-        var memberUser = userService.findByEmail(email);
-        if (memberUser.isPresent()) {
-            publicationService.addMember(id, memberUser.get().getId());
-            ra.addFlashAttribute("success", "Member added!");
-        } else {
+        var userOpt = userService.findByEmail(email);
+        if (userOpt.isEmpty()) {
             ra.addFlashAttribute("error", "User not found");
+        } else {
+            publicationService.addMember(id, userOpt.get().getId());
+            ra.addFlashAttribute("success", "Member added!");
         }
+
+        return "redirect:/publications/settings/" + id;
+    }
+
+    // ✅ Remove member
+    @PostMapping("/{id}/remove-member/{userId}")
+    public String removeMember(@PathVariable Long id,
+                               @PathVariable Long userId,
+                               HttpSession session) {
+
+        String email = (String) session.getAttribute("email");
+        if (email == null) return "redirect:/auth/login";
+
+        User owner = userService.findByEmail(email).orElseThrow();
+
+        var pubOpt = publicationService.findById(id);
+        if (pubOpt.isEmpty()) return "redirect:/";
+
+        Publication pub = pubOpt.get();
+
+        if (!pub.getOwner().getId().equals(owner.getId())) return "redirect:/";
+
+        publicationService.removeMember(id, userId);
 
         return "redirect:/publications/settings/" + id;
     }
