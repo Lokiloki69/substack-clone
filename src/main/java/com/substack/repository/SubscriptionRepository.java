@@ -17,36 +17,34 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Subscription> findBySubscriberIdAndActive(Long subscriberId, boolean active);
 
     @Query("""
-        select s from Subscription s
-        where s.subscriber.id = :subscriberId
-          and s.type = 'PAID'
-          and s.active = true
+        SELECT s FROM Subscription s
+        WHERE s.subscriber.id = :subscriberId
+          AND s.type = 'PAID'
+          AND s.active = true
     """)
     List<Subscription> findPaidSubscriptions(Long subscriberId);
 
     @Query("""
-        select s from Subscription s
-        where s.subscriber.id = :subscriberId
-          and s.type = 'FREE'
-          and s.active = true
+        SELECT s FROM Subscription s
+        WHERE s.subscriber.id = :subscriberId
+          AND s.type = 'FREE'
+          AND s.active = true
     """)
     List<Subscription> findFreeSubscriptions(Long subscriberId);
 
-    List<Subscription> findByAuthorIdAndActive(Long id, boolean b);
+    List<Subscription> findByAuthorIdAndActive(Long authorId, boolean active);
 
     @Query("""
-    SELECT s.subscriber
-    FROM Subscription s
-    WHERE s.author.id = :id
-      AND s.active = true
-""")
-    List<User> findSubscribersByAuthorId(Long id);
+        SELECT s.subscriber
+        FROM Subscription s
+        WHERE s.author.id = :authorId
+          AND s.active = true
+    """)
+    List<User> findSubscribersByAuthorId(Long authorId);
 
-    boolean existsBySubscriberIdAndAuthorIdAndActive(Long currentUserId, Long authorId, boolean b);
-    List<Subscription> findBySubscriberAndActiveTrue(User subscriber);
+    boolean existsBySubscriberIdAndAuthorIdAndActive(Long subscriberId, Long authorId, boolean active);
 
     long countByAuthorIdAndActive(Long authorId, boolean active);
+
     long countBySubscriberIdAndActive(Long subscriberId, boolean active);
-
 }
-
