@@ -55,18 +55,12 @@ public class User {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
 
-    // Many-to-many for subscriptions (users can follow authors)
-    @ManyToMany
-    @JoinTable(
-            name = "subscriptions",
-            joinColumns = @JoinColumn(name = "subscriber_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
-    private List<User> subscriptions;  // authors this user follows
+    @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
 
-    // Reverse side (authors can see their subscribers)
-    @ManyToMany(mappedBy = "subscriptions")
-    private List<User> subscribers;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Subscription> subscribers;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes;

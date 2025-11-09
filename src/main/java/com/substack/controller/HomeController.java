@@ -2,12 +2,9 @@ package com.substack.controller;
 
 import com.substack.model.Post;
 import com.substack.model.Publication;
-import com.substack.model.Subscription;
 import com.substack.model.User;
-import com.substack.repository.PostRepository;
-import com.substack.repository.*;
-import com.substack.service.PostService;
-import com.substack.service.UserService;
+import com.substack.repository.UserRepository;
+import com.substack.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,34 +17,30 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    private final PostRepository postRepository;
-    private final PublicationRepository publicationRepository;
-    private final SubscriptionRepository subscriptionRepository;
-    private final UserRepository userRepository;
-    private final PostService postService;
+
+    private final FeedService feedService;
     private final UserService userService;
+    private final PublicationService publicationService;
+    private final ExploreService exploreService;
 
     @GetMapping("/")
     public String home(
-            @RequestParam(defaultValue = "trending") String feedType,
+            @RequestParam(defaultValue = "following") String feedType,
             Model model,
-            HttpSession session) {
+            HttpSession session
+    ) {
+        String email = (String) session.getAttribute("email");
+        Optional<User> currentUser = email == null
+                ? Optional.empty()
+                : userService.findByEmail(email);
 
-//        Long userId = (Long) session.getAttribute("userId");
-        Optional<User> currentUser = userService.findByEmail((String) session.getAttribute("email"));
-        ;
+        List<Post> posts = feedService.getPosts(feedType, currentUser);
 
-        if (currentUser.isPresent()) {
-//            currentUser = userRepository.findById(userId).orElse(null);
-            model.addAttribute("currentUser", currentUser.get());
-        }
-
-        List<Post> posts = postService.getPosts(feedType, currentUser);
-
-        List<Publication> publications = publicationRepository.findByActive(true);
+        List<Publication> publications = publicationService.findActivePublications();
 
         model.addAttribute("posts", posts);
         model.addAttribute("publications", publications);
+        model.addAttribute("currentUser", currentUser.orElse(null));
         model.addAttribute("selectedFeed", feedType);
 
         return "index";
@@ -55,20 +48,16 @@ public class HomeController {
 
     @GetMapping("/explore")
     public String explore(Model model) {
-        List<User> creators = userRepository.findAll(); // Filter later if needed
-        model.addAttribute("creators", creators);
+        model.addAttribute("trending", exploreService.getTrendingPosts());
+        model.addAttribute("topAuthors", exploreService.getTopAuthors());
+        model.addAttribute("publications", exploreService.getTopPublications());
         return "user/explore";
     }
 
+
     @GetMapping("/search")
     public String search(@RequestParam String q, Model model) {
-        // Simple search - implement full-text search later
-        List<Post> posts = postRepository.findByIsPublishedTrue();
-        List<User> users = userRepository.findAll();
-
-        model.addAttribute("posts", posts);
-        model.addAttribute("users", users);
         model.addAttribute("query", q);
-        return "search";
+        return "search"; // Will refine later
     }
 }

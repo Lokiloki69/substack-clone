@@ -26,27 +26,33 @@ public class UserController {
     public String userProfile(@PathVariable Long id, Model model, HttpSession session) {
 
         User user = userService.findById(id);
-        if (user == null) {
-            return "redirect:/";
+        if (user == null) return "redirect:/";
+
+        String email = (String) session.getAttribute("email");
+        User currentUser = null;
+
+        if (email != null) {
+            currentUser = userService.findByEmail(email).orElse(null);
         }
 
-        Long currentUserId = (Long) session.getAttribute("userId");
         model.addAttribute("user", user);
-        model.addAttribute("isCurrentUser", user.getId().equals(currentUserId));
 
-        // ✅ Add counts needed by your HTML
+        boolean isCurrentUser = currentUser != null && currentUser.getId().equals(user.getId());
+        model.addAttribute("isCurrentUser", isCurrentUser);
+
         model.addAttribute("postCount", user.getPosts().size());
         model.addAttribute("subscriberCount", subscriptionService.countSubscribers(id));
         model.addAttribute("subscriptionsCount", subscriptionService.countFollowing(id));
         model.addAttribute("posts", user.getPosts());
 
-        if (currentUserId != null && !user.getId().equals(currentUserId)) {
-            boolean isSubscribed = subscriptionService.isSubscribed(currentUserId, id);
+        if (!isCurrentUser && currentUser != null) {
+            boolean isSubscribed = subscriptionService.isSubscribed(currentUser.getId(), id);
             model.addAttribute("isSubscribed", isSubscribed);
         }
 
         return "user/profile";
     }
+
 
 
     @GetMapping("/settings")
@@ -86,7 +92,7 @@ public class UserController {
         }
 
         userService.save(user); // persist updates
-        return "redirect:/posts/profile"; // reload updated profile
+        return "redirect:/user/" + user.getId();
     }
 
 }

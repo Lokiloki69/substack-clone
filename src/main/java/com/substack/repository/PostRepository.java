@@ -37,4 +37,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     ORDER BY p.createdAt DESC
     """)
     List<Post> findFollowingPost(@Param("followedAuthors") List<User> followedAuthors);
+
+    @Query("""
+    SELECT p FROM Post p
+    WHERE p.author.id IN :authorIds
+      AND p.isPublished = true
+    ORDER BY p.createdAt DESC
+""")
+    List<Post> findByAuthorIdsAndIsPublishedTrueOrderByCreatedAtDesc(List<Long> followedAuthorIds);
 }

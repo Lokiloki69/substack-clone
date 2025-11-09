@@ -1,12 +1,15 @@
-// src/main/java/com/substack/service/FeedService.java
 package com.substack.service;
 
-import com.substack.model.*;
-import com.substack.repository.*;
+import com.substack.model.Interest;
+import com.substack.model.Post;
+import com.substack.model.Subscription;
+import com.substack.model.User;
+import com.substack.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,13 +18,35 @@ import java.util.stream.Collectors;
 public class FeedService {
 
     private final PostRepository postRepository;
-    private final SubscriptionRepository subscriptionRepository;
-    private final InterestTagMappingRepository mappingRepository;
+
+    public List<Post> getPosts(String feedType, Optional<User> userOpt) {
+        if (userOpt.isEmpty()) {
+            return postRepository.findByIsPublishedTrueOrderByCreatedAtDesc();
+        }
+
+        User user = userOpt.get();
+
+        return switch (feedType) {
+
+            case "following" -> getFollowingPosts(user);
+
+            case "foryou" -> getPersonalizedPosts(user);
+
+            default -> postRepository.findByIsPublishedTrueOrderByCreatedAtDesc();
+        };
+    }
 
     public List<Post> getFollowingPosts(User user) {
-//        List<Long> followingUserId = user.getSubscriptions().stream().map(m->m.getId()).toList();
+        List<Long> followedAuthors = user.getSubscriptions().stream()
+                .filter(Subscription::isActive)
+                .map(sub -> sub.getAuthor().getId())
+                .toList();
 
-        return postRepository.findFollowingPost(user.getSubscriptions());
+        if (followedAuthors.isEmpty()) {
+            return List.of();
+        }
+
+        return postRepository.findByAuthorIdsAndIsPublishedTrueOrderByCreatedAtDesc(followedAuthors);
     }
 
     public List<Post> getPersonalizedPosts(User user) {
