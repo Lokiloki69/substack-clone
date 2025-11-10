@@ -382,6 +382,7 @@
 
             try {
                 const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+                console.log(res);
                 if (!res.ok) throw new Error('User search failed');
                 const users = await res.json();
 
@@ -401,6 +402,7 @@
                 });
             } catch (e) {
                 // fallback dummy
+                console.log(e);
                 const dummy = [
                     {id:1, name:'Vilas Poojari', username:'vilas', profileImageUrl:'https://i.pravatar.cc/28'},
                     {id:2, name:'John Doe', username:'john', profileImageUrl:'https://i.pravatar.cc/28?img=2'}

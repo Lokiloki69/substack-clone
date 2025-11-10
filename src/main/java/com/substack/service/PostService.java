@@ -63,6 +63,7 @@ public class PostService {
                 "Your post has been created",
                 "Your post '" + post.getTitle() + "' was created successfully."
         );
+
     }
 
     private void sendEmailToSubscribers(Post post) {

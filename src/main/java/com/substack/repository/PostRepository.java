@@ -40,7 +40,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("""
     SELECT p FROM Post p
-    WHERE p.author.id IN :authorIds
+    WHERE p.author.id IN :followedAuthorIds
       AND p.isPublished = true
     ORDER BY p.createdAt DESC
 """)
