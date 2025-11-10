@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,14 +30,11 @@ public class CommentController {
     public String createComment(
             @PathVariable Long postId,
             @RequestParam(required = false) Long parentCommentId,
-            @Valid @ModelAttribute CommentDto commentDto,
-            RedirectAttributes ra) {
+            @Valid @ModelAttribute CommentDto commentDto) {
 
         commentDto.setPostId(postId);
         commentDto.setParentCommentId(parentCommentId);
         Comment savedComment = commentService.save(commentDto);
-        ra.addAttribute("comment", savedComment);
-        ra.addAttribute("commentDto",new CommentDto());
         return "redirect:/posts/view/" + postId;
     }
 

@@ -1,6 +1,7 @@
 // src/main/java/com/substack/controller/PostController.java
 package com.substack.controller;
 
+import com.substack.dto.CommentDto;
 import com.substack.model.Interest;
 import com.substack.model.Post;
 import com.substack.model.User;
@@ -100,6 +101,7 @@ public class PostController {
         model.addAttribute("hasLiked", hasLiked);
         model.addAttribute("comments", commentService.getCommentsByPost(id));
         model.addAttribute("postId", id);
+        model.addAttribute("commentDto", new CommentDto());
         return "post/view";
     }
 
