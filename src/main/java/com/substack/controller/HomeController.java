@@ -22,6 +22,7 @@ public class HomeController {
     private final UserService userService;
     private final PublicationService publicationService;
     private final ExploreService exploreService;
+    private final PostService postService;
 
     @GetMapping("/")
     public String home(

@@ -23,13 +23,14 @@ public class Like {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = true)
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", nullable = true)
+    private Comment comment;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
-
-    @ManyToOne
-    private Comment comment;
 }

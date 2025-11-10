@@ -6,6 +6,7 @@ import com.substack.service.*;
 import com.substack.service.auth.AuthService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,9 @@ public class UserController {
             currentUser = userService.findByEmail(email).orElse(null);
         }
 
+
         model.addAttribute("user", user);
+
 
         boolean isCurrentUser = currentUser != null && currentUser.getId().equals(user.getId());
         model.addAttribute("isCurrentUser", isCurrentUser);
@@ -53,7 +56,37 @@ public class UserController {
         return "user/profile";
     }
 
+    @GetMapping("/")
+    public String specificUserProfile(Model model) {
 
+        User user = authService.getCurrentUser();
+        if (user == null) return "redirect:/";
+
+        String email = user.getEmail();
+        User currentUser = null;
+
+        if (email != null) {
+            currentUser = userService.findByEmail(email).orElse(null);
+        }
+
+        model.addAttribute("user", user);
+
+        boolean isCurrentUser = currentUser != null && currentUser.getId().equals(user.getId());
+        model.addAttribute("isCurrentUser", isCurrentUser);
+
+        model.addAttribute("postCount", user.getPosts().size());
+        model.addAttribute("subscriberCount", subscriptionService.countSubscribers(user.getId()));
+        model.addAttribute("subscriptionsCount", subscriptionService.countFollowing(user.getId()));
+        model.addAttribute("posts", user.getPosts());
+
+        model.addAttribute("isSubscribed", false);
+        if (!isCurrentUser && currentUser != null) {
+            boolean isSubscribed = subscriptionService.isSubscribed(currentUser.getId(), user.getId());
+            model.addAttribute("isSubscribed", isSubscribed);
+        }
+
+        return "user/profile";
+    }
 
     @GetMapping("/settings")
     public String userSettings(Model model, HttpSession session) {

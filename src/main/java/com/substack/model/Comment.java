@@ -45,7 +45,7 @@ public class Comment {
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
-    private Instant createdAt;
+    private Instant createdDate;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
