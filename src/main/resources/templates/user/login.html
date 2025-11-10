@@ -95,7 +95,16 @@
         <input type="email" id="email" name="email" placeholder="you@example.com" required>
 
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Your password" required>
+        <div style="position: relative;">
+            <input type="password" id="password" name="password" placeholder="Your password" required>
+            <span id="togglePassword"
+                  style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:14px;">
+        👁
+    </span>
+        </div>
+
+        <a href="/auth/forgot-password">Forgot password?</a>
+
 
         <button type="submit">Login</button>
     </form>
@@ -104,6 +113,14 @@
         <p>Don't have an account? <a href="/auth/register">Sign up</a></p>
     </div>
 </div>
+
+<script>
+    const pwd = document.getElementById("password");
+    const toggle = document.getElementById("togglePassword");
+    toggle.addEventListener("click", () => {
+        pwd.type = pwd.type === "password" ? "text" : "password";
+    });
+</script>
 
 </body>
 </html>
