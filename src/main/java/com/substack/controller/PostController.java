@@ -1,7 +1,8 @@
 // src/main/java/com/substack/controller/PostController.java
 package com.substack.controller;
 
-import com.substack.model.Like;
+import com.substack.dto.CommentDto;
+import com.substack.model.Interest;
 import com.substack.model.Post;
 import com.substack.model.User;
 import com.substack.service.CommentService;
@@ -18,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/posts")
@@ -64,6 +67,8 @@ public class PostController {
         }
 
         User foundUser = user.get();
+        Set<Interest> interests = foundUser.getInterests();
+
         post.setAuthor(foundUser);
 
         post.setAudience(audience != null ? audience : "everyone");
@@ -77,11 +82,11 @@ public class PostController {
             post.setScheduledAt(null);
         }
 
-        Post p = postService.savePost(post);
+        postService.savePost(post,foundUser);
 
 //        ra.addFlashAttribute("success", "Post saved!");
 //        return "redirect:/posts/" + post.getId();
-        return "redirect:/posts/view/"+ p.getId();
+        return "redirect:/";
     }
 
 
@@ -96,6 +101,7 @@ public class PostController {
         model.addAttribute("hasLiked", hasLiked);
         model.addAttribute("comments", commentService.getCommentsByPost(id));
         model.addAttribute("postId", id);
+        model.addAttribute("commentDto", new CommentDto());
         return "post/view";
     }
 
