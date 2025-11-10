@@ -4,6 +4,7 @@ package com.substack.controller;
 import com.substack.model.Interest;
 import com.substack.model.Post;
 import com.substack.model.User;
+import com.substack.service.CommentService;
 import com.substack.service.LikeService;
 import com.substack.service.PostService;
 import com.substack.service.UserService;
@@ -29,6 +30,7 @@ public class PostController {
     private  final LikeService likeService;
     private final UserService userService;
     private final AuthService authService;
+    private final CommentService commentService;
 
     @GetMapping("/new")
     public String newPost(Model model) {
@@ -87,7 +89,6 @@ public class PostController {
     }
 
 
-
     @GetMapping("/view/{id}")
     public String viewPost(@PathVariable Long id,Model model){
         Post post = postService.findById(id);
@@ -97,7 +98,7 @@ public class PostController {
         model.addAttribute("user", user);
         model.addAttribute("likeCount",post.getLikes().size());
         model.addAttribute("hasLiked", hasLiked);
-        model.addAttribute("comments", post.getComments());
+        model.addAttribute("comments", commentService.getCommentsByPost(id));
         model.addAttribute("postId", id);
         return "post/view";
     }

@@ -25,27 +25,18 @@ public class CommentController {
     private final AuthService authService;
 
     @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/posts/{postId}/comments")
-//    public String createComment(
-//            @PathVariable Long postId,
-//            @RequestParam(required = false) Long parentCommentId,
-//            @Valid @ModelAttribute CommentDto commentDto,
-//            Model model) {
-//        commentDto.setPostId(postId);
-//        commentDto.setParentCommentId(parentCommentId);
-//        Comment savedComment = commentService.save(commentDto);
-//        model.addAttribute("comment", savedComment);
-//        return "redirect:/posts/" + postId;
-//    }
     @PostMapping("/posts/{postId}/comments")
     public String createComment(
             @PathVariable Long postId,
             @RequestParam(required = false) Long parentCommentId,
-            @Valid @ModelAttribute CommentDto commentDto) {
+            @Valid @ModelAttribute CommentDto commentDto,
+            RedirectAttributes ra) {
 
         commentDto.setPostId(postId);
         commentDto.setParentCommentId(parentCommentId);
         Comment savedComment = commentService.save(commentDto);
+        ra.addAttribute("comment", savedComment);
+        ra.addAttribute("commentDto",new CommentDto());
         return "redirect:/posts/view/" + postId;
     }
 
