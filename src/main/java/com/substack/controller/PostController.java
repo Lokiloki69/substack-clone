@@ -82,14 +82,19 @@ public class PostController {
         return "redirect:/posts/view/"+ p.getId();
     }
 
+
+
     @GetMapping("/view/{id}")
     public String viewPost(@PathVariable Long id,Model model){
         Post post = postService.findById(id);
         User user = authService.getCurrentUser();
         boolean hasLiked = user != null && likeService.hasUserLikedPost(user.getId(), id);
         model.addAttribute("post", post);
+        model.addAttribute("user", user);
         model.addAttribute("likeCount",post.getLikes().size());
         model.addAttribute("hasLiked", hasLiked);
+        model.addAttribute("comments", post.getComments());
+        model.addAttribute("postId", id);
         return "post/view";
     }
 

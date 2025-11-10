@@ -230,6 +230,72 @@
           margin-top: 50px;
           text-align: center;
         }
+
+        .comment-list {
+  margin-top: 20px;
+}
+
+.comment {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #333;
+}
+
+.comment-content {
+  color: #444;
+  margin: 4px 0 6px;
+  line-height: 1.5;
+}
+
+.comment-date {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.reply-form {
+  margin-top: 10px;
+}
+
+.reply-form textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  font-size: 0.9rem;
+}
+
+.reply-form button {
+  margin-top: 5px;
+  background-color: #ff6719;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.reply-form button:hover {
+  background-color: #e85c10;
+}
+
+/* 🧩 Replies indentation */
+.replies {
+  margin-left: 40px;
+  border-left: 2px solid #f2f2f2;
+  padding-left: 14px;
+  margin-top: 10px;
+}
+
     </style>
 </head>
 
@@ -278,23 +344,179 @@
     <hr>
 
     <!-- Comments Section -->
-    <div class="comments-section">
-        <h3>Comments</h3>
+<!--    <div class="comments-section">-->
+<!--        <h3>Comments</h3>-->
 
-        <!-- Comment Form -->
-        <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">
-            <textarea name="content" placeholder="Write a comment..." required></textarea>
-            <button type="submit">Post Comment</button>
-        </form>
+<!--        &lt;!&ndash; Comment Form &ndash;&gt;-->
+<!--        <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">-->
+<!--            <textarea name="content" placeholder="Write a comment..." required></textarea>-->
+<!--            <button type="submit">Post Comment</button>-->
+<!--        </form>-->
 
-        <!-- Comments List -->
-        <div class="comment-list">
-            <div class="comment" th:each="comment : ${comments}">
-                <p class="comment-author" th:text="${comment.author.name}">User</p>
-                <p class="comment-content" th:text="${comment.content}">Comment</p>
-                <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
-            </div>
+<!--        &lt;!&ndash; Comments List &ndash;&gt;-->
+<!--        <div class="comment-list">-->
+<!--            <div class="comment" th:each="comment : ${comments}">-->
+<!--                <p class="comment-author" th:text="${comment.author.name}">User</p>-->
+<!--                <p class="comment-content" th:text="${comment.content}">Comment</p>-->
+<!--                <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash; 💬 Comment Form &ndash;&gt;-->
+<!--    <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">-->
+<!--        <textarea name="text" placeholder="Write a comment..." required></textarea>-->
+<!--        <button type="submit">Post Comment</button>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; 💬 Comments Section &ndash;&gt;-->
+<!--    <div class="comment-list">-->
+<!--&lt;!&ndash;        <div th:each="comment : ${comments}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div th:insert="~{fragments/comment :: comment(comment)}"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        <div th:each="comment : ${comments}">-->
+<!--            <div th:insert="~{fragments/comment :: comment(comment, ${postId})}"></div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+    <!-- 💬 Comment Form -->
+    <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">
+        <textarea name="text" placeholder="Write a comment..." required></textarea>
+        <button type="submit">Post Comment</button>
+    </form>
+
+    <!-- 💬 Comments Section -->
+    <div class="comment-list">
+        <div th:each="comment : ${comments}">
+            <div th:insert="~{fragments/comment :: comment(comment, ${post.id})}"></div>
         </div>
+    </div>
+
+    <div th:fragment="comment(comment, postId)">
+        <div class="comment">
+
+            <!-- 🧍‍♂️ Comment Info -->
+            <p class="comment-author"
+               th:text="${comment.user != null ? comment.user.username : 'Anonymous'}">
+                Anonymous
+            </p>
+
+            <p class="comment-content" th:text="${comment.text}">Sample comment</p>
+
+            <span class="comment-date"
+                  th:text="${#temporals.format(comment.createdDate, 'dd MMM yyyy HH:mm')}">
+              Date
+        </span>
+
+            <!-- 🧡 Reply Form -->
+            <form th:action="@{'/posts/' + ${postId} + '/comments'}"
+                  method="post"
+                  class="reply-form">
+                <input type="hidden" name="parentCommentId" th:value="${comment.id}" />
+                <textarea name="text" placeholder="Reply to this comment..." required></textarea>
+                <button type="submit">Reply</button>
+            </form>
+
+            <!-- 🔁 Replies Section -->
+            <div class="replies" th:if="${!#lists.isEmpty(comment.replies)}">
+                <button type="button" class="toggle-replies" onclick="toggleReplies(this)">
+                    💬 View Replies (<span th:text="${#lists.size(comment.replies)}">0</span>)
+                </button>
+
+                <div class="nested-replies hidden">
+                    <div th:each="reply : ${comment.replies}">
+                        <div th:insert="~{fragments/comment :: comment(reply, ${postId})}"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            function toggleReplies(button) {
+                const replies = button.nextElementSibling;
+                replies.classList.toggle('hidden');
+                button.textContent =
+                    replies.classList.contains('hidden')
+                        ? '💬 View Replies'
+                        : '👁️ Hide Replies';
+            }
+        </script>
+
+        <style>
+            .comment {
+                background: #fafafa;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin-bottom: 12px;
+            }
+
+            .comment-author {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .comment-content {
+                color: #444;
+                margin: 4px 0 6px;
+                line-height: 1.5;
+            }
+
+            .comment-date {
+                color: #888;
+                font-size: 0.85rem;
+            }
+
+            .reply-form textarea {
+                width: 100%;
+                height: 60px;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                resize: vertical;
+                font-size: 0.9rem;
+                margin-top: 8px;
+            }
+
+            .reply-form button {
+                margin-top: 6px;
+                background-color: #ff6719;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            .reply-form button:hover {
+                background-color: #e85c10;
+            }
+
+            .replies {
+                margin-left: 40px;
+                border-left: 2px solid #f2f2f2;
+                padding-left: 14px;
+                margin-top: 10px;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .toggle-replies {
+                margin-top: 6px;
+                background: none;
+                border: none;
+                color: #007bff;
+                cursor: pointer;
+                font-size: 0.9rem;
+            }
+
+            .toggle-replies:hover {
+                text-decoration: underline;
+            }
+        </style>
     </div>
 
     <div class="footer-info">
