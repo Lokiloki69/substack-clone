@@ -1,118 +1,449 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Substack - The Home for Creators</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link rel="stylesheet" th:href="@{/css/style.css}">-->
+<!--    <style>-->
+<!--        :root {-->
+<!--            &#45;&#45;primary-color: #FF6D00;-->
+<!--            &#45;&#45;text-dark: #212121;-->
+<!--            &#45;&#45;text-light: #757575;-->
+<!--            &#45;&#45;border-color: #E0E0E0;-->
+<!--            &#45;&#45;bg-light: #F5F5F5;-->
+<!--        }-->
+
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;-->
+<!--            background-color: #FFFFFF;-->
+<!--            color: var(&#45;&#45;text-dark);-->
+<!--        }-->
+
+<!--        .navbar {-->
+<!--            background: white;-->
+<!--            border-bottom: 1px solid var(&#45;&#45;border-color);-->
+<!--            padding: 12px 0;-->
+<!--        }-->
+
+<!--        .navbar-brand {-->
+<!--            font-size: 24px;-->
+<!--            font-weight: 700;-->
+<!--            color: var(&#45;&#45;primary-color) !important;-->
+<!--        }-->
+
+<!--        .sidebar {-->
+<!--            background: white;-->
+<!--            border-right: 1px solid var(&#45;&#45;border-color);-->
+<!--            min-height: 100vh;-->
+<!--            padding: 20px 0;-->
+<!--        }-->
+
+<!--        .sidebar-item {-->
+<!--            padding: 12px 20px;-->
+<!--            color: var(&#45;&#45;text-dark);-->
+<!--            text-decoration: none;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 10px;-->
+<!--            transition: background 0.2s;-->
+<!--        }-->
+
+<!--        .sidebar-item:hover {-->
+<!--            background: var(&#45;&#45;bg-light);-->
+<!--            color: var(&#45;&#45;primary-color);-->
+<!--        }-->
+
+<!--        .main-content {-->
+<!--            display: grid;-->
+<!--            grid-template-columns: 280px 1fr 320px;-->
+<!--            gap: 20px;-->
+<!--            padding: 20px;-->
+<!--            max-width: 1400px;-->
+<!--            margin: 0 auto;-->
+<!--        }-->
+
+<!--        .post-card {-->
+<!--            background: white;-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            border-radius: 8px;-->
+<!--            padding: 20px;-->
+<!--            margin-bottom: 20px;-->
+<!--            transition: box-shadow 0.2s;-->
+<!--        }-->
+
+<!--        .post-card:hover {-->
+<!--            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);-->
+<!--        }-->
+
+<!--        .post-title {-->
+<!--            font-size: 20px;-->
+<!--            font-weight: 600;-->
+<!--            margin: 10px 0;-->
+<!--            color: var(&#45;&#45;text-dark);-->
+<!--        }-->
+
+<!--        .post-subtitle {-->
+<!--            font-size: 14px;-->
+<!--            color: var(&#45;&#45;text-light);-->
+<!--            margin-bottom: 12px;-->
+<!--        }-->
+
+<!--        .post-meta {-->
+<!--            font-size: 13px;-->
+<!--            color: var(&#45;&#45;text-light);-->
+<!--            margin-top: 12px;-->
+<!--            display: flex;-->
+<!--            gap: 15px;-->
+<!--        }-->
+
+<!--        .btn-primary-custom {-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            border-radius: 4px;-->
+<!--            padding: 8px 16px;-->
+<!--            font-size: 14px;-->
+<!--            font-weight: 600;-->
+<!--            cursor: pointer;-->
+<!--            transition: background 0.2s;-->
+<!--        }-->
+
+<!--        .btn-primary-custom:hover {-->
+<!--            background: #E65100;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .publication-item {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 12px;-->
+<!--            padding: 12px;-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            border-radius: 6px;-->
+<!--            margin-bottom: 12px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+
+<!--        .publication-avatar {-->
+<!--            width: 40px;-->
+<!--            height: 40px;-->
+<!--            border-radius: 50%;-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            color: white;-->
+<!--            font-weight: 600;-->
+<!--        }-->
+
+<!--        .publication-info h6 {-->
+<!--            margin: 0;-->
+<!--            font-weight: 600;-->
+<!--            font-size: 14px;-->
+<!--        }-->
+
+<!--        .publication-info p {-->
+<!--            margin: 2px 0 0 0;-->
+<!--            font-size: 12px;-->
+<!--            color: var(&#45;&#45;text-light);-->
+<!--        }-->
+
+<!--        .trending-section {-->
+<!--            background: var(&#45;&#45;bg-light);-->
+<!--            border-radius: 8px;-->
+<!--            padding: 20px;-->
+<!--        }-->
+
+<!--        .trending-section h5 {-->
+<!--            font-weight: 700;-->
+<!--            margin-bottom: 15px;-->
+<!--        }-->
+
+<!--        .feed-selector {-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        .feed-selector h4 {-->
+<!--            margin: 0;-->
+<!--            font-weightspan: 700;-->
+<!--        }-->
+
+<!--        .post-card img {-->
+<!--            max-width: 100%;-->
+<!--            height: auto;-->
+<!--            border-radius: 8px;-->
+<!--            margin: 10px 0;-->
+<!--        }-->
+
+<!--        @media (max-width: 1200px) {-->
+<!--            .main-content {-->
+<!--                grid-template-columns: 1fr;-->
+<!--            }-->
+<!--            .sidebar, .trending-section {-->
+<!--                display: none;-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--&lt;!&ndash; Navigation &ndash;&gt;-->
+<!--<nav class="navbar navbar-expand-lg navbar-light">-->
+<!--    <div class="container-fluid">-->
+<!--        <a class="navbar-brand" href="/">Substack</a>-->
+<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--            <ul class="navbar-nav ms-auto">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/explore">Explore</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <input type="search" class="form-control form-control-sm" placeholder="Search">-->
+<!--                </li>-->
+<!--                <li class="nav-item" th:if="${currentUser == null}">-->
+<!--                    <a class="nav-link" href="/auth/login">Login</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item" th:if="${currentUser == null}">-->
+<!--                    <a class="btn btn-primary-custom" href="/auth/register">Sign Up</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item dropdown" th:if="${currentUser != null}">-->
+<!--                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">-->
+<!--                        <span th:text="${currentUser.name}"></span>-->
+<!--                    </a>-->
+<!--                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">-->
+<!--                        <li><a class="dropdown-item" th:href="@{/user/{id}(id=${currentUser.id})}">Profile</a></li>-->
+<!--                        <li><a class="dropdown-item" href="/subscriptions/manage">My Subscriptions</a></li>-->
+<!--                        <li><a class="dropdown-item" href="/publications/new">New Publication</a></li>-->
+<!--                        <li><hr class="dropdown-divider"></li>-->
+<!--                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>-->
+<!--                    </ul>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+
+<!--<div class="main-content">-->
+<!--    &lt;!&ndash; LEFT SIDEBAR &ndash;&gt;-->
+<!--    <div class="sidebar">-->
+<!--        <a href="/" class="sidebar-item">-->
+<!--            <span>Home</span>-->
+<!--        </a>-->
+<!--        <a href="/explore" class="sidebar-item">-->
+<!--            <span>Explore</span>-->
+<!--        </a>-->
+<!--        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">-->
+<!--            <span>Write</span>-->
+<!--        </a>-->
+<!--        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">-->
+<!--            <span>Subscriptions</span>-->
+<!--        </a>-->
+<!--        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">-->
+<!--            <span>New Publication</span>-->
+<!--        </a>-->
+<!--&lt;!&ndash;        <a th:if="${currentUser != null}"  href="/auth/profile" class="sidebar-item">&ndash;&gt;-->
+<!--&lt;!&ndash;            <span>Profile</span>&ndash;&gt;-->
+<!--&lt;!&ndash;        </a>&ndash;&gt;-->
+<!--        <a th:if="${currentUser != null}" href="/user/" class="sidebar-item">-->
+<!--            <span>Profile</span>-->
+<!--        </a>-->
+
+<!--    </div>-->
+
+<!--    &lt;!&ndash; CENTER CONTENT &ndash;&gt;-->
+<!--    <div>-->
+<!--        &lt;!&ndash; FEED SELECTOR: Only Following & For You &ndash;&gt;-->
+<!--        <div class="feed-selector">-->
+<!--            <h4>Feed</h4>-->
+<!--            <div class="dropdown">-->
+<!--                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">-->
+<!--                    <span th:text="${-->
+<!--                        selectedFeed == 'foryou' ? 'For You' : 'Following'-->
+<!--                    }"></span>-->
+<!--                </button>-->
+<!--                <ul class="dropdown-menu">-->
+<!--                    <li><a class="dropdown-item" th:href="@{/(feedType='following')}">Following</a></li>-->
+<!--                    <li><a class="dropdown-item" th:href="@{/(feedType='foryou')}">For You</a></li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; POSTS &ndash;&gt;-->
+<!--        <div th:if="${!posts.isEmpty()}">-->
+<!--            <div th:each="post : ${posts}">-->
+<!--                <div class="post-card">-->
+<!--                    <div class="d-flex justify-content-between align-items-start">-->
+<!--                        <div style="flex: 1;">-->
+
+<!--                            &lt;!&ndash; Preview Image &ndash;&gt;-->
+<!--                            <div th:if="${post.files != null and !post.files.isEmpty()-->
+<!--                                        and (post.content == null or !#strings.contains(post.content, post.files[0].fileUrl))}"-->
+<!--                                 style="float: left; margin-right: 15px; margin-bottom: 10px;">-->
+<!--                                <img th:src="${post.files[0].fileUrl + '?w=200&h=200&fit=crop'}"-->
+<!--                                     alt="Post Preview"-->
+<!--                                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">-->
+<!--                            </div>-->
+
+<!--                            <h3 class="post-title" th:text="${post.title}"></h3>-->
+<!--                            <p class="post-subtitle" th:text="${post.subTitle}"></p>-->
+
+<!--                            <div th:if="${post.content != null}" th:utext="${post.content}"-->
+<!--                                 style="clear: both; margin-top: 10px;"></div>-->
+
+<!--                            <div class="post-meta" style="margin-top: 10px;">-->
+<!--                                <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>-->
+<!--                                <div style="margin-top: 5px;">-->
+<!--                                    <span th:text="${#lists.size(post.likes)} + ' Likes'"></span>-->
+<!--                                    <span> | </span>-->
+<!--                                    <span th:text="${#lists.size(post.commentsList)} + ' Comments'"></span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <a th:href="@{/posts/view/{id}(id=${post.id})}" class="btn btn-primary-custom">Read</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; EMPTY STATE &ndash;&gt;-->
+<!--        <div th:if="${posts.isEmpty()}" style="text-align: center; padding: 40px;">-->
+<!--            <h5 th:text="${-->
+<!--                selectedFeed == 'following' ? 'You are not following anyone yet' :-->
+<!--                'No personalized posts yet'-->
+<!--            }"></h5>-->
+<!--            <p class="text-muted">-->
+<!--                <span th:if="${selectedFeed == 'following'}">Start following authors!</span>-->
+<!--                <span th:if="${selectedFeed == 'foryou'}">Add interests in your profile.</span>-->
+<!--            </p>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; RIGHT SIDEBAR &ndash;&gt;-->
+<!--    <div class="trending-section">-->
+<!--        <h5>Recommended Publications</h5>-->
+<!--        <div th:each="pub : ${publications}">-->
+<!--            <div class="publication-item">-->
+<!--                <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>-->
+<!--                <div class="publication-info" style="flex: 1;">-->
+<!--                    <h6 th:text="${pub.name}"></h6>-->
+<!--                    <p th:text="${pub.owner.name}"></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Substack - The Home for Creators</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- Include common styles -->
+    <style th:replace="~{fragments :: common-styles}"></style>
+
+    <!-- Page-specific styles -->
     <style>
-        :root {
-            --primary-color: #FF6D00;
-            --text-dark: #212121;
-            --text-light: #757575;
-            --border-color: #E0E0E0;
-            --bg-light: #F5F5F5;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background-color: #FFFFFF;
-            color: var(--text-dark);
-        }
-
-        .navbar {
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 0;
-        }
-
-        .navbar-brand {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color) !important;
-        }
-
-        .sidebar {
-            background: white;
-            border-right: 1px solid var(--border-color);
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-
-        .sidebar-item {
-            padding: 12px 20px;
-            color: var(--text-dark);
-            text-decoration: none;
+        /* Feed Selector */
+        .feed-selector {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .sidebar-item:hover {
-            background: var(--bg-light);
-            color: var(--primary-color);
+        .feed-selector h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
+        .dropdown-toggle {
+            background: #FFF;
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
+        /* Post Card */
         .post-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: box-shadow 0.2s;
+            margin-bottom: 48px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .post-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        .post-card:last-child {
+            border-bottom: none;
         }
 
         .post-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 10px 0;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
             color: var(--text-dark);
         }
 
         .post-subtitle {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 12px;
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+            line-height: 1.5;
         }
 
         .post-meta {
             font-size: 13px;
-            color: var(--text-light);
-            margin-top: 12px;
+            color: var(--text-gray);
             display: flex;
-            gap: 15px;
+            gap: 12px;
+            margin-top: 12px;
         }
 
-        .btn-primary-custom {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 16px;
-            font-size: 14px;
+        .post-card img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            float: left;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Right Sidebar */
+        .trending-section {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 340px;
+            height: calc(100vh - 60px);
+            background: var(--bg-light);
+            padding: 32px 24px;
+            overflow-y: auto;
+            border-left: 1px solid var(--border);
+        }
+
+        .trending-section h5 {
+            font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary-custom:hover {
-            background: #E65100;
-            color: white;
+            margin-bottom: 20px;
         }
 
         .publication-item {
@@ -120,226 +451,150 @@
             align-items: center;
             gap: 12px;
             padding: 12px;
-            border: 1px solid var(--border-color);
+            background: #FFF;
             border-radius: 6px;
             margin-bottom: 12px;
             cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .publication-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .publication-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--orange);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #FFF;
             font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
         .publication-info h6 {
             margin: 0;
-            font-weight: 600;
             font-size: 14px;
+            font-weight: 600;
         }
 
         .publication-info p {
             margin: 2px 0 0 0;
             font-size: 12px;
-            color: var(--text-light);
-        }
-
-        .trending-section {
-            background: var(--bg-light);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .trending-section h5 {
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .feed-selector {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .feed-selector h4 {
-            margin: 0;
-            font-weightspan: 700;
-        }
-
-        .post-card img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 10px 0;
+            color: var(--text-gray);
         }
 
         @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            .sidebar, .trending-section {
+            .trending-section {
                 display: none;
+            }
+            .main-content.with-right-sidebar {
+                margin-right: 0;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Substack</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/explore">Explore</a>
-                </li>
-                <li class="nav-item">
-                    <input type="search" class="form-control form-control-sm" placeholder="Search">
-                </li>
-                <li class="nav-item" th:if="${currentUser == null}">
-                    <a class="nav-link" href="/auth/login">Login</a>
-                </li>
-                <li class="nav-item" th:if="${currentUser == null}">
-                    <a class="btn btn-primary-custom" href="/auth/register">Sign Up</a>
-                </li>
-                <li class="nav-item dropdown" th:if="${currentUser != null}">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <span th:text="${currentUser.name}"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" th:href="@{/user/{id}(id=${currentUser.id})}">Profile</a></li>
-                        <li><a class="dropdown-item" href="/subscriptions/manage">My Subscriptions</a></li>
-                        <li><a class="dropdown-item" href="/publications/new">New Publication</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<!-- Include navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-<div class="main-content">
-    <!-- LEFT SIDEBAR -->
-    <div class="sidebar">
-        <a href="/" class="sidebar-item">
-            <span>Home</span>
-        </a>
-        <a href="/explore" class="sidebar-item">
-            <span>Explore</span>
-        </a>
-        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">
-            <span>Write</span>
-        </a>
-        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">
-            <span>Subscriptions</span>
-        </a>
-        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">
-            <span>New Publication</span>
-        </a>
-<!--        <a th:if="${currentUser != null}"  href="/auth/profile" class="sidebar-item">-->
-<!--            <span>Profile</span>-->
-<!--        </a>-->
-        <a th:if="${currentUser != null}" href="/user/" class="sidebar-item">
-            <span>Profile</span>
-        </a>
+<!-- Include sidebar -->
+<div th:replace="~{fragments :: sidebar}"></div>
 
-    </div>
+<!-- Main Content -->
+<div class="main-content with-right-sidebar">
+    <!-- Feed Selector -->
+<!--    <div class="feed-selector">-->
+<!--        <h4>Feed</h4>-->
+<!--        <div class="dropdown">-->
+<!--            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown">-->
+<!--                <span th:text="${selectedFeed == 'foryou' ? 'For You' : 'Following'}"></span>-->
+<!--            </button>-->
+<!--            <ul class="dropdown-menu">-->
+<!--                <li><a class="dropdown-item" th:href="@{/(feedType='following')}">Following</a></li>-->
+<!--                <li><a class="dropdown-item" th:href="@{/(feedType='foryou')}">For You</a></li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
 
-    <!-- CENTER CONTENT -->
-    <div>
-        <!-- FEED SELECTOR: Only Following & For You -->
-        <div class="feed-selector">
-            <h4>Feed</h4>
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    <!-- FEED SELECTOR: Only Following & For You -->
+    <div class="feed-selector">
+        <h4>Feed</h4>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     <span th:text="${
                         selectedFeed == 'foryou' ? 'For You' : 'Following'
                     }"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/(feedType='following')}">Following</a></li>
-                    <li><a class="dropdown-item" th:href="@{/(feedType='foryou')}">For You</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- POSTS -->
-        <div th:if="${!posts.isEmpty()}">
-            <div th:each="post : ${posts}">
-                <div class="post-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div style="flex: 1;">
-
-                            <!-- Preview Image -->
-                            <div th:if="${post.files != null and !post.files.isEmpty()
-                                        and (post.content == null or !#strings.contains(post.content, post.files[0].fileUrl))}"
-                                 style="float: left; margin-right: 15px; margin-bottom: 10px;">
-                                <img th:src="${post.files[0].fileUrl + '?w=200&h=200&fit=crop'}"
-                                     alt="Post Preview"
-                                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
-                            </div>
-
-                            <h3 class="post-title" th:text="${post.title}"></h3>
-                            <p class="post-subtitle" th:text="${post.subTitle}"></p>
-
-                            <div th:if="${post.content != null}" th:utext="${post.content}"
-                                 style="clear: both; margin-top: 10px;"></div>
-
-                            <div class="post-meta" style="margin-top: 10px;">
-                                <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>
-                                <div style="margin-top: 5px;">
-                                    <span th:text="${#lists.size(post.likes)} + ' Likes'"></span>
-                                    <span> | </span>
-                                    <span th:text="${#lists.size(post.commentsList)} + ' Comments'"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <a th:href="@{/posts/view/{id}(id=${post.id})}" class="btn btn-primary-custom">Read</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- EMPTY STATE -->
-        <div th:if="${posts.isEmpty()}" style="text-align: center; padding: 40px;">
-            <h5 th:text="${
-                selectedFeed == 'following' ? 'You are not following anyone yet' :
-                'No personalized posts yet'
-            }"></h5>
-            <p class="text-muted">
-                <span th:if="${selectedFeed == 'following'}">Start following authors!</span>
-                <span th:if="${selectedFeed == 'foryou'}">Add interests in your profile.</span>
-            </p>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" th:href="@{/(feedType='following')}">Following</a></li>
+                <li><a class="dropdown-item" th:href="@{/(feedType='foryou')}">For You</a></li>
+            </ul>
         </div>
     </div>
 
-    <!-- RIGHT SIDEBAR -->
-    <div class="trending-section">
-        <h5>Recommended Publications</h5>
-        <div th:each="pub : ${publications}">
-            <div class="publication-item">
-                <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
-                <div class="publication-info" style="flex: 1;">
-                    <h6 th:text="${pub.name}"></h6>
-                    <p th:text="${pub.owner.name}"></p>
+    <!-- Posts -->
+    <div th:if="${!posts.isEmpty()}">
+        <div th:each="post : ${posts}">
+            <div class="post-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <!-- Preview Image -->
+                        <div th:if="${post.files != null and !post.files.isEmpty() and (post.content == null or !#strings.contains(post.content, post.files[0].fileUrl))}">
+                            <img th:src="${post.files[0].fileUrl + '?w=200&h=200&fit=crop'}" alt="Post Preview">
+                        </div>
+
+                        <h3 class="post-title" th:text="${post.title}"></h3>
+                        <p class="post-subtitle" th:text="${post.subTitle}"></p>
+
+                        <div th:if="${post.content != null}" th:utext="${post.content}" style="clear: both; margin-top: 10px;"></div>
+
+                        <div class="post-meta">
+                            <span th:text="${#temporals.format(post.createdAt, 'MMM d, yyyy')}"></span>
+                            <span th:text="${#lists.size(post.likes)} + ' Likes'"></span>
+                            <span th:text="${#lists.size(post.commentsList)} + ' Comments'"></span>
+                        </div>
+                    </div>
+                    <a th:href="@{/posts/view/{id}(id=${post.id})}" class="btn-primary-custom" style="flex-shrink: 0;">Read</a>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${posts.isEmpty()}" style="text-align: center; padding: 40px;">
+        <h5 th:text="${selectedFeed == 'following' ? 'You are not following anyone yet' : 'No personalized posts yet'}"></h5>
+        <p style="color: var(--text-gray);">
+            <span th:if="${selectedFeed == 'following'}">Start following authors!</span>
+            <span th:if="${selectedFeed == 'foryou'}">Add interests in your profile.</span>
+        </p>
     </div>
 </div>
 
+<!-- Right Sidebar -->
+<div class="trending-section">
+    <h5>Recommended Publications</h5>
+    <div th:each="pub : ${publications}">
+        <a th:href="@{/publications/{slug}(slug=${pub.slug})}" class="publication-item">
+            <div class="publication-avatar" th:text="${pub.name.charAt(0)}"></div>
+            <div class="publication-info" style="flex: 1;">
+                <h6 th:text="${pub.name}"></h6>
+                <p th:text="${pub.owner.name}"></p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Include common scripts -->
+<script th:replace="~{fragments :: common-scripts}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

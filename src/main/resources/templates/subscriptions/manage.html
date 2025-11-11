@@ -1,105 +1,224 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>My Subscriptions | Substack</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+
+<!--    <style>-->
+<!--        :root {-->
+<!--            &#45;&#45;primary-color: #FF6D00;-->
+<!--            &#45;&#45;text-dark: #212121;-->
+<!--            &#45;&#45;text-light: #757575;-->
+<!--            &#45;&#45;border-color: #E0E0E0;-->
+<!--            &#45;&#45;bg-light: #F5F5F5;-->
+<!--        }-->
+
+<!--        body {-->
+<!--            background: white;-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';-->
+<!--        }-->
+
+<!--        .sidebar {-->
+<!--            background: white;-->
+<!--            border-right: 1px solid var(&#45;&#45;border-color);-->
+<!--            min-height: 100vh;-->
+<!--            padding: 20px 0;-->
+<!--        }-->
+
+<!--        .sidebar-item {-->
+<!--            padding: 12px 20px;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            text-decoration: none;-->
+<!--            color: var(&#45;&#45;text-dark);-->
+<!--        }-->
+
+<!--        .sidebar-item:hover {-->
+<!--            background: var(&#45;&#45;bg-light);-->
+<!--            color: var(&#45;&#45;primary-color);-->
+<!--        }-->
+
+<!--        .creator-card {-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            border-radius: 8px;-->
+<!--            padding: 18px;-->
+<!--            margin-bottom: 15px;-->
+<!--            background: white;-->
+<!--        }-->
+
+<!--        .active-filter {-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white !important;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+
+<!--<body>-->
+
+<!--<div class="main-content" style="display:grid; grid-template-columns:280px 1fr; gap:20px; padding:20px;">-->
+
+<!--    &lt;!&ndash; SIDEBAR &ndash;&gt;-->
+<!--    <div class="sidebar">-->
+<!--        <a href="/" class="sidebar-item">Home</a>-->
+<!--        <a href="/explore" class="sidebar-item">Explore</a>-->
+<!--        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">Write</a>-->
+<!--        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item active-filter">Subscriptions</a>-->
+<!--        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">New Publication</a>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; MAIN CONTENT &ndash;&gt;-->
+<!--    <div>-->
+<!--        <h3 style="margin-bottom:20px; font-weight:700;">Your Subscriptions</h3>-->
+
+<!--        &lt;!&ndash; FILTER TABS &ndash;&gt;-->
+<!--        <div class="mb-3">-->
+<!--            <a th:href="@{/subscriptions/manage(filter='all')}"-->
+<!--               class="btn me-2"-->
+<!--               th:classappend="${filter == 'all'} ? 'active-filter' : ''">All</a>-->
+
+<!--            <a th:href="@{/subscriptions/manage(filter='free')}"-->
+<!--               class="btn me-2"-->
+<!--               th:classappend="${filter == 'free'} ? 'active-filter' : ''">Free</a>-->
+
+<!--            <a th:href="@{/subscriptions/manage(filter='paid')}"-->
+<!--               class="btn me-2"-->
+<!--               th:classappend="${filter == 'paid'} ? 'active-filter' : ''">Paid</a>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; SUBSCRIPTIONS LIST &ndash;&gt;-->
+<!--        <div th:if="${subscriptions.isEmpty()}">-->
+<!--            <p class="text-muted">No subscriptions found for this filter.</p>-->
+<!--        </div>-->
+
+<!--        <div th:each="sub : ${subscriptions}" class="creator-card">-->
+<!--            <h5 th:text="${sub.author.name}"></h5>-->
+<!--            <p class="text-muted" th:text="'Type: ' + ${sub.type}"></p>-->
+<!--            <p th:if="${sub.type == 'PAID'}" class="text-warning">Paid Plan Active</p>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>My Subscriptions | Substack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include common styles -->
+    <style th:replace="~{fragments :: common-styles}"></style>
 
     <style>
-        :root {
-            --primary-color: #FF6D00;
-            --text-dark: #212121;
-            --text-light: #757575;
-            --border-color: #E0E0E0;
-            --bg-light: #F5F5F5;
+        .container {
+            margin-left: 260px;
+            max-width: 800px;
+            padding: 40px 20px;
         }
 
-        body {
-            background: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
         }
 
-        .sidebar {
-            background: white;
-            border-right: 1px solid var(--border-color);
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-
-        .sidebar-item {
-            padding: 12px 20px;
+        .filter-tabs {
             display: flex;
-            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .filter-tabs a {
+            padding: 8px 16px;
+            border-radius: 4px;
             text-decoration: none;
+            color: var(--text-gray);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-tabs a:hover {
+            background: var(--bg-light);
             color: var(--text-dark);
         }
 
-        .sidebar-item:hover {
-            background: var(--bg-light);
-            color: var(--primary-color);
+        .filter-tabs a.active {
+            background: var(--orange);
+            color: #FFF;
         }
 
         .creator-card {
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 15px;
-            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: #FFF;
         }
 
-        .active-filter {
-            background: var(--primary-color);
-            color: white !important;
+        .creator-card h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .text-muted {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .text-warning {
+            color: #f39c12;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 
 <body>
+<!-- Include navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-<div class="main-content" style="display:grid; grid-template-columns:280px 1fr; gap:20px; padding:20px;">
+<!-- Include sidebar -->
+<div th:replace="~{fragments :: sidebar}"></div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <a href="/" class="sidebar-item">Home</a>
-        <a href="/explore" class="sidebar-item">Explore</a>
-        <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">Write</a>
-        <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item active-filter">Subscriptions</a>
-        <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">New Publication</a>
+<div class="container">
+    <h3>Your Subscriptions</h3>
+
+    <!-- FILTER TABS -->
+    <div class="filter-tabs">
+        <a th:href="@{/subscriptions/manage(filter='all')}"
+           th:classappend="${filter == 'all'} ? 'active' : ''">All</a>
+
+        <a th:href="@{/subscriptions/manage(filter='free')}"
+           th:classappend="${filter == 'free'} ? 'active' : ''">Free</a>
+
+        <a th:href="@{/subscriptions/manage(filter='paid')}"
+           th:classappend="${filter == 'paid'} ? 'active' : ''">Paid</a>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div>
-        <h3 style="margin-bottom:20px; font-weight:700;">Your Subscriptions</h3>
-
-        <!-- FILTER TABS -->
-        <div class="mb-3">
-            <a th:href="@{/subscriptions/manage(filter='all')}"
-               class="btn me-2"
-               th:classappend="${filter == 'all'} ? 'active-filter' : ''">All</a>
-
-            <a th:href="@{/subscriptions/manage(filter='free')}"
-               class="btn me-2"
-               th:classappend="${filter == 'free'} ? 'active-filter' : ''">Free</a>
-
-            <a th:href="@{/subscriptions/manage(filter='paid')}"
-               class="btn me-2"
-               th:classappend="${filter == 'paid'} ? 'active-filter' : ''">Paid</a>
-        </div>
-
-        <!-- SUBSCRIPTIONS LIST -->
-        <div th:if="${subscriptions.isEmpty()}">
-            <p class="text-muted">No subscriptions found for this filter.</p>
-        </div>
-
-        <div th:each="sub : ${subscriptions}" class="creator-card">
-            <h5 th:text="${sub.author.name}"></h5>
-            <p class="text-muted" th:text="'Type: ' + ${sub.type}"></p>
-            <p th:if="${sub.type == 'PAID'}" class="text-warning">Paid Plan Active</p>
-        </div>
-
+    <!-- SUBSCRIPTIONS LIST -->
+    <div th:if="${subscriptions.isEmpty()}">
+        <p class="text-muted">No subscriptions found for this filter.</p>
     </div>
 
+    <div th:each="sub : ${subscriptions}" class="creator-card">
+        <h5 th:text="${sub.author.name}"></h5>
+        <p class="text-muted" th:text="'Type: ' + ${sub.type}"></p>
+        <p th:if="${sub.type == 'PAID'}" class="text-warning">Paid Plan Active</p>
+    </div>
 </div>
 
+<!-- Include common scripts -->
+<script th:replace="~{fragments :: common-scripts}"></script>
 </body>
 </html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- NAVBAR FRAGMENT -->
+<!-- ============================================ -->
+<nav th:fragment="navbar" class="navbar">
+    <a href="/" class="navbar-brand">Substack</a>
+    <div class="navbar-nav">
+        <a href="/explore" class="nav-link">Explore</a>
+        <input type="search" class="search-input" placeholder="Search" />
+
+        <!-- Logged Out -->
+        <span th:if="${currentUser == null}">
+            <a href="/auth/login" class="nav-link">Sign In</a>
+            <a href="/auth/register" class="btn-primary-custom">Sign Up</a>
+        </span>
+
+        <!-- Logged In -->
+        <span th:if="${currentUser != null}" style="display: flex; align-items: center; gap: 20px;">
+            <a href="/posts/new" class="nav-link">Write</a>
+            <div class="dropdown">
+                <button class="profile-btn" onclick="toggleDropdown()">
+                    <span th:text="${currentUser.name}"></span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a th:href="@{/user/{id}(id=${currentUser.id})}" class="dropdown-item">Profile</a>
+                    <a href="/subscriptions/manage" class="dropdown-item">My Subscriptions</a>
+                    <a href="/publications/new" class="dropdown-item">New Publication</a>
+                    <hr class="dropdown-divider">
+                    <a href="/auth/logout" class="dropdown-item">Logout</a>
+                </div>
+            </div>
+        </span>
+    </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- SIDEBAR FRAGMENT -->
+<!-- ============================================ -->
+<div th:fragment="sidebar" class="sidebar">
+    <a href="/" class="sidebar-item">
+        <span class="icon">🏠</span>
+        <span>Home</span>
+    </a>
+    <a href="/explore" class="sidebar-item">
+        <span class="icon">🔍</span>
+        <span>Explore</span>
+    </a>
+    <a th:if="${currentUser != null}" href="/posts/new" class="sidebar-item">
+        <span class="icon">✏️</span>
+        <span>Write</span>
+    </a>
+    <a th:if="${currentUser != null}" href="/subscriptions/manage" class="sidebar-item">
+        <span class="icon">📚</span>
+        <span>Subscriptions</span>
+    </a>
+    <a th:if="${currentUser != null}" href="/publications/new" class="sidebar-item">
+        <span class="icon">➕</span>
+        <span>New Publication</span>
+    </a>
+    <a th:if="${currentUser != null}" th:href="@{/user/{id}(id=${currentUser.id})}" class="sidebar-item">
+        <span class="icon">👤</span>
+        <span>Profile</span>
+    </a>
+</div>
+
+<!-- ============================================ -->
+<!-- COMMON STYLES FRAGMENT -->
+<!-- ============================================ -->
+<style th:fragment="common-styles">
+    :root {
+        --orange: #FF6719;
+        --text-dark: #000;
+        --text-gray: #666;
+        --border: #E6E6E6;
+        --bg-light: #FAFAFA;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: #FFF;
+        color: var(--text-dark);
+        line-height: 1.6;
+        padding-top: 60px;
+    }
+
+    /* ========== NAVBAR ========== */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #FFF;
+        border-bottom: 1px solid var(--border);
+        padding: 12px 20px;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar-brand {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .nav-link {
+        color: var(--text-gray);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+        color: var(--text-dark);
+    }
+
+    .search-input {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 14px;
+        width: 200px;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: var(--text-gray);
+    }
+
+    .btn-primary-custom {
+        background: var(--orange);
+        color: #FFF;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary-custom:hover {
+        background: #E55A00;
+        color: #FFF;
+    }
+
+    /* Dropdown */
+    .dropdown {
+        position: relative;
+    }
+
+    .profile-btn {
+        background: none;
+        border: 1px solid var(--border);
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text-dark);
+    }
+
+    .dropdown-arrow {
+        font-size: 10px;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 8px;
+        background: #FFF;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        min-width: 200px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1001;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        display: block;
+        padding: 10px 16px;
+        color: var(--text-dark);
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: var(--bg-light);
+    }
+
+    .dropdown-divider {
+        margin: 8px 0;
+        border: none;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        width: 240px;
+        height: calc(100vh - 60px);
+        background: #FFF;
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 999;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 24px;
+        color: var(--text-gray);
+        text-decoration: none;
+        font-size: 15px;
+        transition: all 0.2s;
+    }
+
+    .sidebar-item:hover {
+        background: var(--bg-light);
+        color: var(--text-dark);
+    }
+
+    .sidebar-item .icon {
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+    }
+
+    /* ========== MAIN LAYOUT ========== */
+    .main-wrapper {
+        display: flex;
+    }
+
+    .main-content {
+        margin-left: 240px;
+        padding: 32px 40px;
+        flex: 1;
+        max-width: 920px;
+    }
+
+    .main-content.with-right-sidebar {
+        margin-right: 340px;
+    }
+
+    .main-content.centered {
+        max-width: 680px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .main-content.with-sidebar-only {
+        margin-left: 260px;
+        max-width: 680px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1200px) {
+        .main-content.with-right-sidebar {
+            margin-right: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+
+        .main-content,
+        .main-content.with-sidebar-only,
+        .main-content.with-right-sidebar {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .navbar-nav {
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 120px;
+        }
+    }
+</style>
+
+<!-- ============================================ -->
+<!-- COMMON SCRIPTS FRAGMENT -->
+<!-- ============================================ -->
+<script th:fragment="common-scripts">
+    function toggleDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.profile-btn') && !event.target.closest('.profile-btn')) {
+            const dropdowns = document.getElementsByClassName('dropdown-menu');
+            for (let i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove('show');
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

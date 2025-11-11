@@ -1,55 +1,201 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Explore | Substack</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--</head>-->
+
+<!--<body class="bg-light">-->
+
+<!--<div class="container py-5">-->
+
+<!--    <h2 class="mb-4 fw-bold">Explore</h2>-->
+
+<!--    &lt;!&ndash; Trending Posts &ndash;&gt;-->
+<!--    <h4 class="mt-5">Trending Posts</h4>-->
+<!--    <div th:if="${trending.isEmpty()}">-->
+<!--        <p>No trending posts available.</p>-->
+<!--    </div>-->
+
+<!--    <div th:each="post : ${trending}" class="card mb-3 p-3">-->
+<!--        <h5 th:text="${post.title}"></h5>-->
+<!--        <p class="text-muted" th:text="${post.author.name}"></p>-->
+<!--        <a class="btn btn-primary btn-sm" th:href="@{/posts/view/{id}(id=${post.id})}">Read</a>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Popular Authors &ndash;&gt;-->
+<!--    <h4 class="mt-5">Popular Authors</h4>-->
+<!--    <div th:if="${topAuthors.isEmpty()}">-->
+<!--        <p>No authors found.</p>-->
+<!--    </div>-->
+
+<!--    <div th:each="u : ${topAuthors}" class="card mb-3 p-3 d-flex flex-row align-items-center">-->
+<!--        <div class="me-3" style="font-size: 24px;">👤</div>-->
+<!--        <div>-->
+<!--            <h6 th:text="${u.name}"></h6>-->
+<!--            <a th:href="@{/user/{id}(id=${u.id})}" class="btn btn-outline-secondary btn-sm mt-1">View Profile</a>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Publications &ndash;&gt;-->
+<!--    <h4 class="mt-5">Top Publications</h4>-->
+<!--    <div th:if="${publications.isEmpty()}">-->
+<!--        <p>No publications available.</p>-->
+<!--    </div>-->
+
+<!--    <div th:each="pub : ${publications}" class="card mb-3 p-3">-->
+<!--        <h5 th:text="${pub.name}"></h5>-->
+<!--        <p class="text-muted" th:text="${pub.owner.name}"></p>-->
+<!--        <a th:href="@{/publications/{slug}(slug=${pub.slug})}" class="btn btn-primary btn-sm">View Publication</a>-->
+<!--    </div>-->
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Explore | Substack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include common styles -->
+    <style th:replace="~{fragments :: common-styles}"></style>
+
+    <style>
+        .container {
+            margin-left: 260px;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 48px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #FFF;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .text-muted {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: #FFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: #E55A00;
+            color: #FFF;
+        }
+
+        .btn-outline-secondary {
+            background: #FFF;
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--bg-light);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
+<!-- Include navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-<div class="container py-5">
+<!-- Include sidebar -->
+<div th:replace="~{fragments :: sidebar}"></div>
 
-    <h2 class="mb-4 fw-bold">Explore</h2>
+<div class="container">
+    <h2>Explore</h2>
 
     <!-- Trending Posts -->
-    <h4 class="mt-5">Trending Posts</h4>
+    <h4>Trending Posts</h4>
     <div th:if="${trending.isEmpty()}">
-        <p>No trending posts available.</p>
+        <p class="text-muted">No trending posts available.</p>
     </div>
 
-    <div th:each="post : ${trending}" class="card mb-3 p-3">
+    <div th:each="post : ${trending}" class="card">
         <h5 th:text="${post.title}"></h5>
         <p class="text-muted" th:text="${post.author.name}"></p>
-        <a class="btn btn-primary btn-sm" th:href="@{/posts/view/{id}(id=${post.id})}">Read</a>
+        <a class="btn-primary" th:href="@{/posts/view/{id}(id=${post.id})}">Read</a>
     </div>
 
     <!-- Popular Authors -->
-    <h4 class="mt-5">Popular Authors</h4>
+    <h4>Popular Authors</h4>
     <div th:if="${topAuthors.isEmpty()}">
-        <p>No authors found.</p>
+        <p class="text-muted">No authors found.</p>
     </div>
 
-    <div th:each="u : ${topAuthors}" class="card mb-3 p-3 d-flex flex-row align-items-center">
-        <div class="me-3" style="font-size: 24px;">👤</div>
-        <div>
-            <h6 th:text="${u.name}"></h6>
-            <a th:href="@{/user/{id}(id=${u.id})}" class="btn btn-outline-secondary btn-sm mt-1">View Profile</a>
+    <div th:each="u : ${topAuthors}" class="card" style="display: flex; align-items: center;">
+        <div style="font-size: 24px; margin-right: 16px;">👤</div>
+        <div style="flex: 1;">
+            <h6 th:text="${u.name}" style="margin: 0; font-size: 1rem; font-weight: 600;"></h6>
+            <a th:href="@{/user/{id}(id=${u.id})}" class="btn-outline-secondary" style="margin-top: 8px;">View Profile</a>
         </div>
     </div>
 
     <!-- Publications -->
-    <h4 class="mt-5">Top Publications</h4>
+    <h4>Top Publications</h4>
     <div th:if="${publications.isEmpty()}">
-        <p>No publications available.</p>
+        <p class="text-muted">No publications available.</p>
     </div>
 
-    <div th:each="pub : ${publications}" class="card mb-3 p-3">
+    <div th:each="pub : ${publications}" class="card">
         <h5 th:text="${pub.name}"></h5>
         <p class="text-muted" th:text="${pub.owner.name}"></p>
-        <a th:href="@{/publications/{slug}(slug=${pub.slug})}" class="btn btn-primary btn-sm">View Publication</a>
+        <a th:href="@{/publications/{slug}(slug=${pub.slug})}" class="btn-primary">View Publication</a>
     </div>
-
 </div>
+
+<!-- Include common scripts -->
+<script th:replace="~{fragments :: common-scripts}"></script>
 </body>
 </html>

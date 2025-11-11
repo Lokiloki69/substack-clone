@@ -1,22 +1,105 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>All Posts</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Posts</h1>-->
+
+<!--<table>-->
+<!--    <tr>-->
+<!--        <th>Title</th>-->
+<!--        <th>Author</th>-->
+<!--    </tr>-->
+<!--    <tr th:each="post : ${posts}">-->
+<!--        <td th:text="${post.title}"></td>-->
+<!--        <td th:text="${post.author.username}"></td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--<a href="/posts/new">Create New Post</a>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>All Posts</title>
+
+    <!-- Include common styles -->
+    <style th:replace="~{fragments :: common-styles}"></style>
+
+    <style>
+        .container {
+            margin-left: 260px;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        td {
+            color: var(--text-gray);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>Posts</h1>
+<!-- Include navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Author</th>
-    </tr>
-    <tr th:each="post : ${posts}">
-        <td th:text="${post.title}"></td>
-        <td th:text="${post.author.username}"></td>
-    </tr>
-</table>
+<!-- Include sidebar -->
+<div th:replace="~{fragments :: sidebar}"></div>
 
-<a href="/posts/new">Create New Post</a>
+<div class="container">
+    <h1>Posts</h1>
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+        </tr>
+        <tr th:each="post : ${posts}">
+            <td th:text="${post.title}"></td>
+            <td th:text="${post.author.username}"></td>
+        </tr>
+    </table>
+
+    <a href="/posts/new" class="btn-primary-custom">Create New Post</a>
+</div>
+
+<!-- Include common scripts -->
+<script th:replace="~{fragments :: common-scripts}"></script>
 </body>
 </html>

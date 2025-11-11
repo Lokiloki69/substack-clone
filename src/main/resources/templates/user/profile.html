@@ -1,3 +1,542 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
+<!--    <title th:text="${user.name} + ' | Substack Clone'">User Profile</title>-->
+
+<!--    <style>-->
+<!--        * { margin: 0; padding: 0; box-sizing: border-box; }-->
+<!--        body {-->
+<!--            font-family: "Segoe UI", Tahoma, Geneva, sans-serif;-->
+<!--            background: #fafafa;-->
+<!--            color: #333;-->
+<!--            line-height: 1.4;-->
+<!--        }-->
+<!--        a { text-decoration: none; color: inherit; }-->
+<!--        .container {-->
+<!--            width: 100%;-->
+<!--            max-width: 800px;-->
+<!--            margin: 0 auto;-->
+<!--            padding: 20px;-->
+<!--        }-->
+<!--        .profile-header {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            padding: 20px 0;-->
+<!--            border-bottom: 1px solid #e0e0e0;-->
+<!--        }-->
+<!--        .profile-header img.avatar {-->
+<!--            width: 88px;-->
+<!--            height: 88px;-->
+<!--            border-radius: 50%;-->
+<!--            object-fit: cover;-->
+<!--            margin-right: 20px;-->
+<!--        }-->
+<!--        .profile-info { flex: 1; }-->
+<!--        .profile-info h1 {-->
+<!--            font-size: 1.8rem;-->
+<!--            font-weight: 600;-->
+<!--            margin-bottom: 4px;-->
+<!--        }-->
+<!--        .handle {-->
+<!--            color: #828282;-->
+<!--            font-size: 0.9rem;-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
+<!--        .bio {-->
+<!--            font-size: 0.95rem;-->
+<!--            color: #555;-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
+<!--        .profile-actions button {-->
+<!--            padding: 8px 16px;-->
+<!--            border: none;-->
+<!--            border-radius: 4px;-->
+<!--            font-size: 0.9rem;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--        .btn-follow { background: #ff4600; color: #fff; margin-right: 10px; }-->
+<!--        .btn-message { background: #f0f0f0; color: #333; }-->
+<!--        .stats {-->
+<!--            display: flex;-->
+<!--            gap: 24px;-->
+<!--            margin-top: 10px;-->
+<!--            color: #555;-->
+<!--            font-size: 0.9rem;-->
+<!--        }-->
+<!--        .stat { display: flex; flex-direction: column; align-items: center; }-->
+<!--        .value { font-weight: 600; font-size: 1.2rem; margin-bottom: 2px; }-->
+<!--        .tabs {-->
+<!--            margin-top: 30px;-->
+<!--            border-bottom: 1px solid #e0e0e0;-->
+<!--            display: flex;-->
+<!--            gap: 40px;-->
+<!--        }-->
+<!--        .tabs button {-->
+<!--            background: none; border: none; padding: 10px 0;-->
+<!--            font-size: 1rem; cursor: pointer; color: #555;-->
+<!--        }-->
+<!--        .tabs button.active {-->
+<!--            color: #000;-->
+<!--            border-bottom: 2px solid #ff4600;-->
+<!--        }-->
+<!--        .tab-content { margin-top: 20px; }-->
+<!--        .post-item { padding: 16px 0; border-bottom: 1px solid #eaeaea; }-->
+<!--        .post-item:last-child { border: none; }-->
+<!--        .post-item h3 { font-size: 1.2rem; margin-bottom: 6px; }-->
+<!--        .meta { font-size: 0.85rem; color: #888; }-->
+<!--        .excerpt { font-size: 0.95rem; color: #555; margin-top: 8px; }-->
+<!--        @media (max-width: 600px) {-->
+<!--            .profile-header { flex-direction: column; align-items: flex-start; }-->
+<!--            .profile-header img.avatar { margin-bottom: 16px; }-->
+<!--            .profile-actions { margin-top: 12px; }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <div class="profile-header">-->
+<!--        <img class="avatar"-->
+<!--             th:src="${user.profileImageUrl != null ? user.profileImageUrl : 'https://via.placeholder.com/88'}"-->
+<!--             alt="Profile Image" />-->
+<!--        <div class="profile-info">-->
+<!--            <h1 th:text="${user.name}">User Name</h1>-->
+<!--            <div class="handle" th:text="'@' + ${user.username}">@username</div>-->
+<!--            <div class="bio" th:text="${user.bio != null ? user.bio : 'No bio yet.'}"></div>-->
+
+<!--            <div class="stats">-->
+<!--                <div class="stat">-->
+<!--                    <div class="value" th:text="${subscriberCount}">0</div>-->
+<!--                    <div class="label">Subscribers</div>-->
+<!--                </div>-->
+<!--                <div class="stat">-->
+<!--                    <div class="value" th:text="${postCount}">0</div>-->
+<!--                    <div class="label">Posts</div>-->
+<!--                </div>-->
+<!--                <div class="stat">-->
+<!--                    <div class="value" th:text="${subscriptionsCount}">0</div>-->
+<!--                    <div class="label">Following</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="profile-actions" th:if="${!isCurrentUser}">-->
+
+<!--            &lt;!&ndash; If NOT subscribed &ndash;&gt;-->
+<!--            <form th:if="${!isSubscribed}"-->
+<!--                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"-->
+<!--                  method="post">-->
+<!--                <input type="hidden" name="type" value="FREE">-->
+<!--                <button type="submit" class="btn-follow">Subscribe</button>-->
+<!--            </form>-->
+
+<!--            <form th:if="${!isSubscribed}"-->
+<!--                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"-->
+<!--                  method="post">-->
+<!--                <input type="hidden" name="type" value="PAID">-->
+<!--                <button type="submit" class="btn-message">Go Premium</button>-->
+<!--            </form>-->
+
+
+<!--            &lt;!&ndash; If already subscribed &ndash;&gt;-->
+<!--            <button th:if="${isSubscribed}" class="btn-message" disabled>-->
+<!--                Subscribed-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="tabs">-->
+<!--        <button class="active" data-tab="posts">Posts</button>-->
+<!--        <button data-tab="likes">Likes</button>-->
+<!--        <button data-tab="reads">Reads</button>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; POSTS TAB &ndash;&gt;-->
+<!--    <div class="tab-content" id="posts">-->
+<!--        <div th:if="${posts.isEmpty()}">-->
+<!--            <p>No posts published yet.</p>-->
+<!--        </div>-->
+
+<!--        <div th:each="post : ${posts}">-->
+<!--            <div class="post-item">-->
+<!--                <h3 th:text="${post.title}">Post Title</h3>-->
+<!--                <div class="meta"-->
+<!--                     th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}"></div>-->
+<!--                <p class="excerpt" th:text="${post.subTitle}">Subtitle or short excerpt here...</p>-->
+<!--                <a th:href="@{/posts/view/{id}(id=${post.id})}" class="view-btn">View</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; LIKES TAB &ndash;&gt;-->
+<!--    <div class="tab-content" id="likes" style="display:none;">-->
+<!--        <div th:each="like : ${user.likes}">-->
+<!--            <div class="post-item">-->
+<!--                <h3 th:text="${like.post.title}"></h3>-->
+<!--                <a th:href="@{/posts/view/{id}(id=${like.post.id})}" class="view-btn">View</a>-->
+<!--                <div class="meta"-->
+<!--                     th:text="${#temporals.format(like.post.createdAt, 'MMM dd, yyyy')}"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; READS TAB &ndash;&gt;-->
+<!--    <div class="tab-content" id="reads" style="display:none;">-->
+<!--        <div th:each="activity : ${user.activities}">-->
+<!--            <div class="post-item">-->
+<!--                <h3 th:text="${activity.post.title}"></h3>-->
+<!--                <div class="meta"-->
+<!--                     th:text="${#temporals.format(activity.timestamp, 'MMM dd, yyyy')}"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<script>-->
+<!--    // Simple tab switch logic-->
+<!--    const tabs = document.querySelectorAll('.tabs button');-->
+<!--    tabs.forEach(btn => {-->
+<!--        btn.addEventListener('click', () => {-->
+<!--            document.querySelector('.tabs button.active').classList.remove('active');-->
+<!--            btn.classList.add('active');-->
+<!--            const target = btn.getAttribute('data-tab');-->
+<!--            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');-->
+<!--            document.getElementById(target).style.display = 'block';-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html xmlns:th="http://www.thymeleaf.org" lang="en">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="UTF-8" />&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta name="viewport" content="width=device-width, initial-scale=1.0" />&ndash;&gt;-->
+<!--&lt;!&ndash;    <title th:text="${user.name} + ' | Substack Clone'">User Profile</title>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <style>&ndash;&gt;-->
+<!--&lt;!&ndash;        * {&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-sizing: border-box;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        body {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-family: "Inter", "Segoe UI", Tahoma, Geneva, sans-serif;&ndash;&gt;-->
+<!--&lt;!&ndash;            background-color: #fafafa;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #222;&ndash;&gt;-->
+<!--&lt;!&ndash;            line-height: 1.6;&ndash;&gt;-->
+<!--&lt;!&ndash;            -webkit-font-smoothing: antialiased;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        a {&ndash;&gt;-->
+<!--&lt;!&ndash;            text-decoration: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: inherit;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .container {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            max-width: 800px;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 0 auto;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 24px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #fff;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .profile-header {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            align-items: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            justify-content: flex-start;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: 1px solid #e5e5e5;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding-bottom: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 24px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .avatar {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 90px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 90px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            object-fit: cover;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-right: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 1px solid #ddd;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .profile-info {&ndash;&gt;-->
+<!--&lt;!&ndash;            flex: 1;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .profile-info h1 {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.8rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 600;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #111;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .handle {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #666;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.9rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 4px 0 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bio {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.95rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #444;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .stats {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            gap: 24px;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-top: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .stat {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            flex-direction: column;&ndash;&gt;-->
+<!--&lt;!&ndash;            align-items: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.9rem;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .value {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 600;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.2rem;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .label {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #777;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.85rem;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .profile-actions {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            flex-direction: column;&ndash;&gt;-->
+<!--&lt;!&ndash;            gap: 8px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .profile-actions button {&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 8px 16px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 4px;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.9rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            cursor: pointer;&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: background-color 0.2s ease-in-out;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-follow {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #ff471a;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #fff;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-follow:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #e64000;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-message {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #f2f2f2;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #333;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-message:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #e6e6e6;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .tabs {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            gap: 32px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: 1px solid #e5e5e5;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 16px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .tabs button {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            border: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 10px 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            cursor: pointer;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #555;&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: color 0.2s ease-in-out;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .tabs button:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #000;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .tabs button.active {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #000;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 600;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: 2px solid #ff471a;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .tab-content {&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-top: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .post-item {&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 16px 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: 1px solid #eee;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .post-item:last-child {&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: none;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .post-item h3 {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.1rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 6px;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 600;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .meta {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.85rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #888;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .excerpt {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.95rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #555;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-top: 8px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .view-btn {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: inline-block;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-top: 8px;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.9rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #ff471a;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .view-btn:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            text-decoration: underline;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @media (max-width: 600px) {&ndash;&gt;-->
+<!--&lt;!&ndash;            .profile-header {&ndash;&gt;-->
+<!--&lt;!&ndash;                flex-direction: column;&ndash;&gt;-->
+<!--&lt;!&ndash;                align-items: flex-start;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            .avatar {&ndash;&gt;-->
+<!--&lt;!&ndash;                margin-bottom: 12px;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            .tabs {&ndash;&gt;-->
+<!--&lt;!&ndash;                gap: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            .profile-actions {&ndash;&gt;-->
+<!--&lt;!&ndash;                flex-direction: row;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    </style>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="container">&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; PROFILE HEADER &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="profile-header">&ndash;&gt;-->
+<!--&lt;!&ndash;        <img class="avatar"&ndash;&gt;-->
+<!--&lt;!&ndash;             th:src="${user.profileImageUrl != null ? user.profileImageUrl : 'https://via.placeholder.com/88'}"&ndash;&gt;-->
+<!--&lt;!&ndash;             alt="Profile Image" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div class="profile-info">&ndash;&gt;-->
+<!--&lt;!&ndash;            <h1 th:text="${user.name}">User Name</h1>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="handle" th:text="'@' + ${user.username}">@username</div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="bio" th:text="${user.bio != null ? user.bio : 'No bio yet.'}">No bio yet.</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <div class="stats">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="stat">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="value" th:text="${subscriberCount}">0</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="label">Subscribers</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="stat">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="value" th:text="${postCount}">0</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="label">Posts</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="stat">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="value" th:text="${subscriptionsCount}">0</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="label">Following</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div class="profile-actions" th:if="${!isCurrentUser}">&ndash;&gt;-->
+<!--&lt;!&ndash;            &lt;!&ndash; Not Subscribed &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <form th:if="${!isSubscribed}"&ndash;&gt;-->
+<!--&lt;!&ndash;                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"&ndash;&gt;-->
+<!--&lt;!&ndash;                  method="post">&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="hidden" name="type" value="FREE" />&ndash;&gt;-->
+<!--&lt;!&ndash;                <button type="submit" class="btn-follow">Subscribe</button>&ndash;&gt;-->
+<!--&lt;!&ndash;            </form>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <form th:if="${!isSubscribed}"&ndash;&gt;-->
+<!--&lt;!&ndash;                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"&ndash;&gt;-->
+<!--&lt;!&ndash;                  method="post">&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="hidden" name="type" value="PAID" />&ndash;&gt;-->
+<!--&lt;!&ndash;                <button type="submit" class="btn-message">Go Premium</button>&ndash;&gt;-->
+<!--&lt;!&ndash;            </form>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            &lt;!&ndash; Already Subscribed &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <button th:if="${isSubscribed}" class="btn-message" disabled>Subscribed</button>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; TABS &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="tabs">&ndash;&gt;-->
+<!--&lt;!&ndash;        <button class="active" data-tab="posts">Posts</button>&ndash;&gt;-->
+<!--&lt;!&ndash;        <button data-tab="likes">Likes</button>&ndash;&gt;-->
+<!--&lt;!&ndash;        <button data-tab="reads">Reads</button>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; POSTS TAB &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="tab-content" id="posts">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div th:if="${posts.isEmpty()}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <p>No posts published yet.</p>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div th:each="post : ${posts}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="post-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                <h3 th:text="${post.title}">Post Title</h3>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="meta" th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Date</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <p class="excerpt" th:text="${post.subTitle}">Subtitle or excerpt...</p>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{/posts/view/{id}(id=${post.id})}" class="view-btn">View</a>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; LIKES TAB &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="tab-content" id="likes" style="display:none;">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div th:each="like : ${user.likes}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="post-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                <h3 th:text="${like.post.title}">Liked Post</h3>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{/posts/view/{id}(id=${like.post.id})}" class="view-btn">View</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="meta" th:text="${#temporals.format(like.post.createdAt, 'MMM dd, yyyy')}">Date</div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; READS TAB &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="tab-content" id="reads" style="display:none;">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div th:each="activity : ${user.activities}">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="post-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                <h3 th:text="${activity.post.title}">Read Post</h3>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="meta" th:text="${#temporals.format(activity.timestamp, 'MMM dd, yyyy')}">Date</div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    // Substack-like tab switching&ndash;&gt;-->
+<!--&lt;!&ndash;    document.querySelectorAll('.tabs button').forEach(button => {&ndash;&gt;-->
+<!--&lt;!&ndash;        button.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;            document.querySelector('.tabs button.active').classList.remove('active');&ndash;&gt;-->
+<!--&lt;!&ndash;            button.classList.add('active');&ndash;&gt;-->
+<!--&lt;!&ndash;            const tabId = button.getAttribute('data-tab');&ndash;&gt;-->
+<!--&lt;!&ndash;            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');&ndash;&gt;-->
+<!--&lt;!&ndash;            document.getElementById(tabId).style.display = 'block';&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
@@ -5,27 +544,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${user.name} + ' | Substack Clone'">User Profile</title>
 
+    <!-- Include common styles -->
+    <style th:replace="~{fragments :: common-styles}"></style>
+
+    <!-- Page-specific styles -->
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, sans-serif;
-            background: #fafafa;
-            color: #333;
-            line-height: 1.4;
-        }
-        a { text-decoration: none; color: inherit; }
         .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin-left: 260px;
+            max-width: 680px;
+            padding: 40px 20px;
         }
+
         .profile-header {
             display: flex;
             align-items: center;
             padding: 20px 0;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border);
         }
+
         .profile-header img.avatar {
             width: 88px;
             height: 88px;
@@ -33,31 +569,29 @@
             object-fit: cover;
             margin-right: 20px;
         }
-        .profile-info { flex: 1; }
+
+        .profile-info {
+            flex: 1;
+        }
+
         .profile-info h1 {
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 4px;
         }
+
         .handle {
-            color: #828282;
+            color: var(--text-gray);
             font-size: 0.9rem;
             margin-bottom: 10px;
         }
+
         .bio {
             font-size: 0.95rem;
             color: #555;
             margin-bottom: 10px;
         }
-        .profile-actions button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .btn-follow { background: #ff4600; color: #fff; margin-right: 10px; }
-        .btn-message { background: #f0f0f0; color: #333; }
+
         .stats {
             display: flex;
             gap: 24px;
@@ -65,37 +599,141 @@
             color: #555;
             font-size: 0.9rem;
         }
-        .stat { display: flex; flex-direction: column; align-items: center; }
-        .value { font-weight: 600; font-size: 1.2rem; margin-bottom: 2px; }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .value {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .profile-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn-follow {
+            background: var(--orange);
+            color: #fff;
+        }
+
+        .btn-follow:hover {
+            background: #E55A00;
+        }
+
+        .btn-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-message:hover {
+            background: #e0e0e0;
+        }
+
         .tabs {
             margin-top: 30px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border);
             display: flex;
             gap: 40px;
         }
+
         .tabs button {
-            background: none; border: none; padding: 10px 0;
-            font-size: 1rem; cursor: pointer; color: #555;
+            background: none;
+            border: none;
+            padding: 10px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.2s;
         }
+
+        .tabs button:hover {
+            color: #000;
+        }
+
         .tabs button.active {
             color: #000;
-            border-bottom: 2px solid #ff4600;
+            border-bottom: 2px solid var(--orange);
         }
-        .tab-content { margin-top: 20px; }
-        .post-item { padding: 16px 0; border-bottom: 1px solid #eaeaea; }
-        .post-item:last-child { border: none; }
-        .post-item h3 { font-size: 1.2rem; margin-bottom: 6px; }
-        .meta { font-size: 0.85rem; color: #888; }
-        .excerpt { font-size: 0.95rem; color: #555; margin-top: 8px; }
-        @media (max-width: 600px) {
-            .profile-header { flex-direction: column; align-items: flex-start; }
-            .profile-header img.avatar { margin-bottom: 16px; }
-            .profile-actions { margin-top: 12px; }
+
+        .tab-content {
+            margin-top: 20px;
+        }
+
+        .post-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .post-item:last-child {
+            border-bottom: none;
+        }
+
+        .post-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .excerpt {
+            font-size: 0.95rem;
+            color: #555;
+            margin-top: 8px;
+        }
+
+        .view-btn {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--orange);
+            text-decoration: none;
+        }
+
+        .view-btn:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-header img.avatar {
+                margin-bottom: 12px;
+            }
         }
     </style>
 </head>
 <body>
+
+<!-- Include navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
+
+<!-- Include sidebar -->
+<div th:replace="~{fragments :: sidebar}"></div>
+
 <div class="container">
+
+    <!-- PROFILE HEADER -->
     <div class="profile-header">
         <img class="avatar"
              th:src="${user.profileImageUrl != null ? user.profileImageUrl : 'https://via.placeholder.com/88'}"
@@ -122,22 +760,20 @@
         </div>
 
         <div class="profile-actions" th:if="${!isCurrentUser}">
-
             <!-- If NOT subscribed -->
             <form th:if="${!isSubscribed}"
                   th:action="@{/subscriptions/join/{id}(id=${user.id})}"
-                  method="post">
+                  method="post" style="display: inline;">
                 <input type="hidden" name="type" value="FREE">
                 <button type="submit" class="btn-follow">Subscribe</button>
             </form>
 
             <form th:if="${!isSubscribed}"
                   th:action="@{/subscriptions/join/{id}(id=${user.id})}"
-                  method="post">
+                  method="post" style="display: inline;">
                 <input type="hidden" name="type" value="PAID">
                 <button type="submit" class="btn-message">Go Premium</button>
             </form>
-
 
             <!-- If already subscribed -->
             <button th:if="${isSubscribed}" class="btn-message" disabled>
@@ -146,6 +782,7 @@
         </div>
     </div>
 
+    <!-- TABS -->
     <div class="tabs">
         <button class="active" data-tab="posts">Posts</button>
         <button data-tab="likes">Likes</button>
@@ -191,7 +828,12 @@
             </div>
         </div>
     </div>
+
 </div>
+
+<!-- Include common scripts -->
+<script th:replace="~{fragments :: common-scripts}"></script>
+
 <script>
     // Simple tab switch logic
     const tabs = document.querySelectorAll('.tabs button');
@@ -207,336 +849,6 @@
 </script>
 </body>
 </html>
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8" />-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
-<!--    <title th:text="${user.name} + ' | Substack Clone'">User Profile</title>-->
-
-<!--    <style>-->
-<!--        * {-->
-<!--            margin: 0;-->
-<!--            padding: 0;-->
-<!--            box-sizing: border-box;-->
-<!--        }-->
-
-<!--        body {-->
-<!--            font-family: "Inter", "Segoe UI", Tahoma, Geneva, sans-serif;-->
-<!--            background-color: #fafafa;-->
-<!--            color: #222;-->
-<!--            line-height: 1.6;-->
-<!--            -webkit-font-smoothing: antialiased;-->
-<!--        }-->
-
-<!--        a {-->
-<!--            text-decoration: none;-->
-<!--            color: inherit;-->
-<!--        }-->
-
-<!--        .container {-->
-<!--            width: 100%;-->
-<!--            max-width: 800px;-->
-<!--            margin: 0 auto;-->
-<!--            padding: 24px;-->
-<!--            background: #fff;-->
-<!--        }-->
-
-<!--        .profile-header {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--            justify-content: flex-start;-->
-<!--            border-bottom: 1px solid #e5e5e5;-->
-<!--            padding-bottom: 20px;-->
-<!--            margin-bottom: 24px;-->
-<!--        }-->
-
-<!--        .avatar {-->
-<!--            width: 90px;-->
-<!--            height: 90px;-->
-<!--            border-radius: 50%;-->
-<!--            object-fit: cover;-->
-<!--            margin-right: 20px;-->
-<!--            border: 1px solid #ddd;-->
-<!--        }-->
-
-<!--        .profile-info {-->
-<!--            flex: 1;-->
-<!--        }-->
-
-<!--        .profile-info h1 {-->
-<!--            font-size: 1.8rem;-->
-<!--            font-weight: 600;-->
-<!--            color: #111;-->
-<!--        }-->
-
-<!--        .handle {-->
-<!--            color: #666;-->
-<!--            font-size: 0.9rem;-->
-<!--            margin: 4px 0 10px;-->
-<!--        }-->
-
-<!--        .bio {-->
-<!--            font-size: 0.95rem;-->
-<!--            color: #444;-->
-<!--            margin-bottom: 10px;-->
-<!--        }-->
-
-<!--        .stats {-->
-<!--            display: flex;-->
-<!--            gap: 24px;-->
-<!--            margin-top: 10px;-->
-<!--        }-->
-
-<!--        .stat {-->
-<!--            display: flex;-->
-<!--            flex-direction: column;-->
-<!--            align-items: center;-->
-<!--            font-size: 0.9rem;-->
-<!--        }-->
-
-<!--        .value {-->
-<!--            font-weight: 600;-->
-<!--            font-size: 1.2rem;-->
-<!--        }-->
-
-<!--        .label {-->
-<!--            color: #777;-->
-<!--            font-size: 0.85rem;-->
-<!--        }-->
-
-<!--        .profile-actions {-->
-<!--            display: flex;-->
-<!--            flex-direction: column;-->
-<!--            gap: 8px;-->
-<!--        }-->
-
-<!--        .profile-actions button {-->
-<!--            padding: 8px 16px;-->
-<!--            border: none;-->
-<!--            border-radius: 4px;-->
-<!--            font-size: 0.9rem;-->
-<!--            cursor: pointer;-->
-<!--            transition: background-color 0.2s ease-in-out;-->
-<!--        }-->
-
-<!--        .btn-follow {-->
-<!--            background: #ff471a;-->
-<!--            color: #fff;-->
-<!--        }-->
-
-<!--        .btn-follow:hover {-->
-<!--            background: #e64000;-->
-<!--        }-->
-
-<!--        .btn-message {-->
-<!--            background: #f2f2f2;-->
-<!--            color: #333;-->
-<!--        }-->
-
-<!--        .btn-message:hover {-->
-<!--            background: #e6e6e6;-->
-<!--        }-->
-
-<!--        .tabs {-->
-<!--            display: flex;-->
-<!--            gap: 32px;-->
-<!--            border-bottom: 1px solid #e5e5e5;-->
-<!--            margin-bottom: 16px;-->
-<!--        }-->
-
-<!--        .tabs button {-->
-<!--            background: none;-->
-<!--            border: none;-->
-<!--            padding: 10px 0;-->
-<!--            cursor: pointer;-->
-<!--            font-size: 1rem;-->
-<!--            color: #555;-->
-<!--            transition: color 0.2s ease-in-out;-->
-<!--        }-->
-
-<!--        .tabs button:hover {-->
-<!--            color: #000;-->
-<!--        }-->
-
-<!--        .tabs button.active {-->
-<!--            color: #000;-->
-<!--            font-weight: 600;-->
-<!--            border-bottom: 2px solid #ff471a;-->
-<!--        }-->
-
-<!--        .tab-content {-->
-<!--            margin-top: 20px;-->
-<!--        }-->
-
-<!--        .post-item {-->
-<!--            padding: 16px 0;-->
-<!--            border-bottom: 1px solid #eee;-->
-<!--        }-->
-
-<!--        .post-item:last-child {-->
-<!--            border-bottom: none;-->
-<!--        }-->
-
-<!--        .post-item h3 {-->
-<!--            font-size: 1.1rem;-->
-<!--            margin-bottom: 6px;-->
-<!--            font-weight: 600;-->
-<!--        }-->
-
-<!--        .meta {-->
-<!--            font-size: 0.85rem;-->
-<!--            color: #888;-->
-<!--        }-->
-
-<!--        .excerpt {-->
-<!--            font-size: 0.95rem;-->
-<!--            color: #555;-->
-<!--            margin-top: 8px;-->
-<!--        }-->
-
-<!--        .view-btn {-->
-<!--            display: inline-block;-->
-<!--            margin-top: 8px;-->
-<!--            font-size: 0.9rem;-->
-<!--            color: #ff471a;-->
-<!--        }-->
-
-<!--        .view-btn:hover {-->
-<!--            text-decoration: underline;-->
-<!--        }-->
-
-<!--        @media (max-width: 600px) {-->
-<!--            .profile-header {-->
-<!--                flex-direction: column;-->
-<!--                align-items: flex-start;-->
-<!--            }-->
-
-<!--            .avatar {-->
-<!--                margin-bottom: 12px;-->
-<!--            }-->
-
-<!--            .tabs {-->
-<!--                gap: 20px;-->
-<!--            }-->
-
-<!--            .profile-actions {-->
-<!--                flex-direction: row;-->
-<!--            }-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--<div class="container">-->
-
-<!--    &lt;!&ndash; PROFILE HEADER &ndash;&gt;-->
-<!--    <div class="profile-header">-->
-<!--        <img class="avatar"-->
-<!--             th:src="${user.profileImageUrl != null ? user.profileImageUrl : 'https://via.placeholder.com/88'}"-->
-<!--             alt="Profile Image" />-->
-
-<!--        <div class="profile-info">-->
-<!--            <h1 th:text="${user.name}">User Name</h1>-->
-<!--            <div class="handle" th:text="'@' + ${user.username}">@username</div>-->
-<!--            <div class="bio" th:text="${user.bio != null ? user.bio : 'No bio yet.'}">No bio yet.</div>-->
-
-<!--            <div class="stats">-->
-<!--                <div class="stat">-->
-<!--                    <div class="value" th:text="${subscriberCount}">0</div>-->
-<!--                    <div class="label">Subscribers</div>-->
-<!--                </div>-->
-<!--                <div class="stat">-->
-<!--                    <div class="value" th:text="${postCount}">0</div>-->
-<!--                    <div class="label">Posts</div>-->
-<!--                </div>-->
-<!--                <div class="stat">-->
-<!--                    <div class="value" th:text="${subscriptionsCount}">0</div>-->
-<!--                    <div class="label">Following</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="profile-actions" th:if="${!isCurrentUser}">-->
-<!--            &lt;!&ndash; Not Subscribed &ndash;&gt;-->
-<!--            <form th:if="${!isSubscribed}"-->
-<!--                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"-->
-<!--                  method="post">-->
-<!--                <input type="hidden" name="type" value="FREE" />-->
-<!--                <button type="submit" class="btn-follow">Subscribe</button>-->
-<!--            </form>-->
-
-<!--            <form th:if="${!isSubscribed}"-->
-<!--                  th:action="@{/subscriptions/join/{id}(id=${user.id})}"-->
-<!--                  method="post">-->
-<!--                <input type="hidden" name="type" value="PAID" />-->
-<!--                <button type="submit" class="btn-message">Go Premium</button>-->
-<!--            </form>-->
-
-<!--            &lt;!&ndash; Already Subscribed &ndash;&gt;-->
-<!--            <button th:if="${isSubscribed}" class="btn-message" disabled>Subscribed</button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; TABS &ndash;&gt;-->
-<!--    <div class="tabs">-->
-<!--        <button class="active" data-tab="posts">Posts</button>-->
-<!--        <button data-tab="likes">Likes</button>-->
-<!--        <button data-tab="reads">Reads</button>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; POSTS TAB &ndash;&gt;-->
-<!--    <div class="tab-content" id="posts">-->
-<!--        <div th:if="${posts.isEmpty()}">-->
-<!--            <p>No posts published yet.</p>-->
-<!--        </div>-->
-
-<!--        <div th:each="post : ${posts}">-->
-<!--            <div class="post-item">-->
-<!--                <h3 th:text="${post.title}">Post Title</h3>-->
-<!--                <div class="meta" th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Date</div>-->
-<!--                <p class="excerpt" th:text="${post.subTitle}">Subtitle or excerpt...</p>-->
-<!--                <a th:href="@{/posts/view/{id}(id=${post.id})}" class="view-btn">View</a>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; LIKES TAB &ndash;&gt;-->
-<!--    <div class="tab-content" id="likes" style="display:none;">-->
-<!--        <div th:each="like : ${user.likes}">-->
-<!--            <div class="post-item">-->
-<!--                <h3 th:text="${like.post.title}">Liked Post</h3>-->
-<!--                <a th:href="@{/posts/view/{id}(id=${like.post.id})}" class="view-btn">View</a>-->
-<!--                <div class="meta" th:text="${#temporals.format(like.post.createdAt, 'MMM dd, yyyy')}">Date</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; READS TAB &ndash;&gt;-->
-<!--    <div class="tab-content" id="reads" style="display:none;">-->
-<!--        <div th:each="activity : ${user.activities}">-->
-<!--            <div class="post-item">-->
-<!--                <h3 th:text="${activity.post.title}">Read Post</h3>-->
-<!--                <div class="meta" th:text="${#temporals.format(activity.timestamp, 'MMM dd, yyyy')}">Date</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--</div>-->
-
-<!--<script>-->
-<!--    // Substack-like tab switching-->
-<!--    document.querySelectorAll('.tabs button').forEach(button => {-->
-<!--        button.addEventListener('click', () => {-->
-<!--            document.querySelector('.tabs button.active').classList.remove('active');-->
-<!--            button.classList.add('active');-->
-<!--            const tabId = button.getAttribute('data-tab');-->
-<!--            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');-->
-<!--            document.getElementById(tabId).style.display = 'block';-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
 
 
 
